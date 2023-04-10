@@ -1,14 +1,28 @@
 import requests
 import json
+import psycopg2
 import datetime
+import argparse
+import os
 
-# Set global variables
-symbol = 'BTCUSDT' # keep uppercase
-refresh_interval = 30.0 # in seconds
-value_threshold = 400000.00 # in USD
-depth = '5000' # max 5000
 
-# Set global constants
+POSTGRESQL_USR = os.getenv('POSTGRESQL_USR')
+POSTGRESQL_PWD = os.getenv('POSTGRESQL_PWD')
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-s', '--symbol', type=str, help='Trading pair: e.g. BTCUSDT', required=True)
+parser.add_argument('-i', '--refresh_interval', type=float, help='Refresh interval in seconds: e.g. 5.0', required=True)
+parser.add_argument('-t', '--value_threshold', type=float, help='Value threshold in USD: e.g. 400000.00', required=True)
+parser.add_argument('-d', '--depth', type=str, help='Max depth (range 1-5000)', required=True)
+
+args = parser.parse_args()
+
+symbol = args.symbol.upper()
+refresh_interval = args.refresh_interval
+value_threshold = args.value_threshold
+depth = args.depth
+
+# API URI
 snapshot_uri = 'https://api.binance.com/api/v3/depth?symbol=' + symbol + '&limit=' + depth
 
 # Get order book snapshot from Binance API
@@ -37,23 +51,49 @@ def get_last_api_data():
     return last_api_data
 
 
+def get_symbol_db_record(symbol):
+    # Establish a connection to the PostgreSQL database
+    conn = psycopg2.connect(database="babs", user=POSTGRESQL_USR, password=POSTGRESQL_PWD, host="127.0.0.1", port="5432")
+
+    # Open a cursor to perform database operations
+    cur = conn.cursor()
+
+    # Execute the SQL query to select all rows where the 'symbol' field is equal to symbol
+    cur.execute("SELECT json_data FROM frontend_scanresults WHERE json_data ->> 'symbol' = " + symbol)
+
+    # Fetch all rows returned by the query
+    rows = cur.fetchall()
+
+    # Process each row and extract the JSON data
+    for row in rows:
+        json_data = json.loads(row[0])
+        # Do something with the JSON data
+        return json_data
+
+    cur.close()
+    conn.close()
+
+
 # Find common filtered price levels and save in database
 def filter_levels():
-
-    # Retrieve last record from db
-
-
     # Retrieve last API data
     last_api_data = get_last_api_data()
-    if not db_record: # first run case, save in db
+    try:
+        # Retrieve last record from db
+        result = get_symbol_db_record(symbol)
+
+        # oldest_timestamp_data = ScanResults.objects.filter(json_data__symbol='BTCUSDT').filter(json_data__first_scan=True).order_by('json_data__timestamp')
+        # latest_timestamp_data = ScanResults.objects.filter(json_data__symbol='BTCUSDT').filter(json_data__first_scan=True).order_by('-json_data__timestamp')
+    except psycopg2.errors.UndefinedColumn:
+        # first run case, save in db
         last_api_data["first_scan"] = True
-        result = json.dumps(last_api_data) # Convert result dictionary to JSON object
-
-
-        document = json.loads(result)
-
-
-    else: # since the second execution, compare new API data with db snapshot
+        #result = json.dumps(last_api_data) # Convert result dictionary to JSON object
+        #document = json.loads(result)
+        print('no results, saving to database')
+    except Exception as e:
+        raise e
+        '''
+        # since the second execution, compare new API data with db snapshot
         # initialize an empty dictionary for the output
         output_dict = {'symbol': db_record['symbol'], 'bids': {}, 'asks': {}}
 
@@ -71,17 +111,6 @@ def filter_levels():
         timestamp = datetime.datetime.now()
         output_dict["date"] = timestamp.isoformat()
         result = json.dumps(output_dict) # Convert result dictionary to JSON object
-
-        #DEBUG TO BE REMOVED
-        '''
-        print('db record')
-        print(db_record)
-        print()
-        print('last API data')
-        print(last_api_data)
-        print()
-        print('values found in both dictionaries')
-        print(result)
         '''
 
 

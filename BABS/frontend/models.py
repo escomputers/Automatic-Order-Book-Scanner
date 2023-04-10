@@ -1,3 +1,5 @@
 from django.db import models
 
-# Create your models here.
+
+class ScanResults(models.Model):
+    json_data = models.JSONField(blank=True, null=True)

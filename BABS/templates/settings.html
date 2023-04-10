@@ -123,4 +123,24 @@
 
 	</section>
 </div><!-- content-wrapper -->
+<script>
+	const url = "https://api.binance.com/api/v3/exchangeInfo";
+
+	async function getTradingPairs() {
+		try {
+			const response = await fetch(url);
+			const data = await response.json();
+			const symbols = data.symbols;
+			const tradingPairs = symbols
+				.filter(symbol => symbol.quoteAsset === 'USDT' || symbol.quoteAsset === 'BUSD')
+				.map(symbol => symbol.symbol);
+			console.log(tradingPairs);
+		} catch (error) {
+			console.error(error);
+		}
+	}
+	
+	getTradingPairs();
+	
+</script>
 {% endblock %}
