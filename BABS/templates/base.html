@@ -1,0 +1,121 @@
+{% load static %}
+<!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<!-- icons -->
+  <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}"/>
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}"/>
+  <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}"/>
+  <link rel="manifest" href="{% static 'images/site.webmanifest' %}"/>
+
+	<title>BABS | Dashboard</title>
+
+	<!-- jQuery -->
+	<script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+	
+	<!-- Bootstrap -->
+	<script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <link rel="stylesheet" href="{% static 'plugins/bootstrap/css/bootstrap.min.css' %}" >
+	
+	<!-- overlayScrollbars -->
+	<script src="{% static 'plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js' %}"></script>
+  <link rel="stylesheet" href="{% static 'plugins/overlayScrollbars/css/OverlayScrollbars.min.css' %}" >
+
+	<!-- AdminLTE -->
+	<script src="{% static 'plugins/adminlte/js/adminlte.min.js' %}"></script>
+  <link rel="stylesheet" href="{% static 'plugins/adminlte/css/adminlte.min.css' %}" >
+
+	<!-- Font Awesome -->
+	<script src="{% static 'plugins/fontawesome/js/all.min.js' %}"></script>
+  <link rel="stylesheet" href="{% static 'plugins/fontawesome/css/all.min.css' %}">
+
+  <!-- select2 -->
+  <link rel="stylesheet" type="text/css" href="{% static 'plugins/select2/css/select2.min.css' %}">
+  <link rel="stylesheet" href="{% static 'plugins/select2/css/select2-bootstrap4.min.css' %}">
+  <script src="{% static 'plugins/select2/js/select2.full.min.js' %}"></script>
+
+  <!-- ChartJS -->
+	<script src="{% static 'plugins/chartjs/js/chart.min.js' %}"></script>
+  <script src="{% static 'plugins/chartjs/js/chart.umd.min.js' %}"></script>
+  <script src="{% static 'plugins/chartjs/js/helpers.min.js' %}"></script>
+
+</head>
+
+<body class="hold-transition sidebar-mini layout-fixed">
+    <div class="wrapper">
+    <!-- Preloader -->
+    <div class="preloader flex-column justify-content-center align-items-center" >
+    <img class="animation__shake" src="{% static 'images/babs.svg' %}" alt="Logo" height="60" width="60">
+    </div>
+  
+    <!-- Navbar -->
+    <nav class="main-header navbar navbar-expand navbar-light">
+        <!-- Left navbar links -->
+        <ul class="navbar-nav">
+            <li class="nav-item">
+            <a class="nav-link" data-widget="pushmenu" href="#" id="action" role="button"><i class="fas fa-bars"></i></a>
+            </li>
+        </ul>
+            
+        <ul class="navbar-nav ml-auto">	 
+        </ul>
+    </nav>
+
+    <!-- Main Sidebar Container -->
+    <aside class="main-sidebar sidebar-light-primary elevation-4">
+    <!-- Brand Logo -->
+    <a class="brand-link" href="{% url 'dashboard' %}">
+        <img src="{% static 'images/babs.svg' %}" alt="Logo" class="brand-image" style="opacity: .8">
+        <span class="brand-text font-weight-light"><h4><strong>BABS</strong> Dashboard</h4></span>
+    </a>
+		
+    <!-- Sidebar -->
+    <div class="sidebar">  
+				
+	<!-- Sidebar Menu -->
+    <nav class="mt-2">
+      <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+
+        <li class="nav-item">
+          <a href="{% url 'dashboard' %}" class="nav-link">
+            <i class="fas fa-home nav-icon"></i>
+            <p>Home</p>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="{% url 'settings' %}" class="nav-link">
+            <i class="fas fa-screwdriver-wrench nav-icon"></i>
+            <p>Settings</p>
+          </a>
+        </li>
+
+      </ul>
+	</nav><!-- /.sidebar-menu -->
+    </div><!-- /.sidebar -->
+  </aside>
+
+{% block content %}
+
+  {% endblock %}
+  <!-- Footer -->
+  <footer class="main-footer">
+    <div class="float-right d-none d-sm-inline-block">
+      <b>Version</b> 0.1.0
+    </div>
+  </footer>
+
+  <!-- Control Sidebar -->
+  <aside class="control-sidebar control-sidebar-dark">
+  </aside>
+  <!-- /.control-sidebar -->
+	</div>
+<!-- ./wrapper -->
+
+</body>
+</html>

@@ -1,0 +1,312 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+  .button-container {
+    float: right;
+  }
+</style>
+<div class="content-wrapper">
+<!-- Content Header (Page header) -->
+  <section class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          {% if empty_clusters %}
+          <script>
+            Swal.fire({
+              html:
+                'Some clusters have no associated node' +
+                ' and won\'t be scanned. </br>' +
+                'Add nodes <a href="#}">here</a>' +
+                ' to fix this issue',
+              focusConfirm: false,
+              icon: 'warning',
+              showCloseButton: true,
+              showConfirmButton: false,
+              toast: true,
+              position: 'top-right'
+            })
+          </script>
+          {% endif %}
+				</div>
+      </div>
+    </div>
+  </section>
+
+	<!-- Main content -->
+	<section class="content">
+		<div class="container-fluid">
+
+      <div class="card"><!-- Clusters table -->
+				<div class="card-header">
+					<h5>
+						<i class="fas fa-circle-nodes"></i>
+						&nbsp;Clusters
+						<span class="badge badge-primary">{{ clusters_number }}</span>
+					</h5>
+					<!-- table buttons-->
+					<div id="button-container" class="button-container"></div>
+				</div>
+
+				<div class="card-body">
+					<table id="clusters" class="table table-bordered table-hover">
+						<thead>
+							<tr>
+							<th>Active clusters</th>
+							<th class="none">Nodes:</th>
+							<th class="none"></th>
+							<!--<th></th> for remove button-->
+							</tr>
+						</thead>
+
+						<tbody>
+							{% if clusters_data %}
+							{% for i in clusters_data %}
+							<tr>
+								<td>{{ i.cluster_name }}</td>
+                  <td>
+                    {% for item in cluster_urls %}
+                      {% if item.cluster_id == i.id %}
+                        </br><span class="input-group-text"><i class="fas fa-link"></i>
+                          &nbsp;<a href="{{ item.url }}" target="_blank">{{ item.url }}</a>
+                        </span>
+                      {% endif %}
+                    {% endfor %}
+                </td>
+                <td></td>
+								<!--
+									/**
+										*! INSERIRE 
+									*/
+								<td>
+									<span class="badge bg-danger"><font size="3.1em">Remove</font></span>
+								</td>
+								-->
+							</tr>
+							{% endfor %}
+						{% endif %}	
+						</tbody>
+
+					</table>
+
+				</div><!-- card body -->
+		  </div><!-- card -->
+
+			<div class="card"><!-- Last report -->
+				<div class="card-header">
+					<h5>
+						<i class="fas fa-chart-simple"></i>
+						&nbsp;Jobs report
+          </h5>
+				</div>
+
+				<div class="card-body">
+					<table id="last_report" class="table table-borderless table-hover">
+						<thead>
+							<tr>
+                <th>Cluster</th>
+                <th>Used</th>
+                <th>Available</th>
+                <th>Status</th>
+                <th>Last update</th>
+							</tr>
+						</thead>
+
+						{% if clusters_data %}
+						<tbody>
+              {% for i in clusters_data %}
+							<tr>
+								<td>{{ i.cluster_name }}</td>
+								<td>{{ i.entities_count }}</td>
+                <td>{{ i.threshold }}</td>
+								<td><span class="badge badge-success">Normal</span></td>
+                <td>
+                  <small class="text-muted">
+                    Last check: 2023-01-03 22:32:22
+                  </small>
+                </td>
+							</tr>
+              {% endfor %}
+						</tbody>
+            {% endif %}	
+
+					</table>
+				</div><!-- card body -->
+		  </div><!-- card -->
+
+		  <div class="card"><!-- Recap -->
+        <div class="card-header">
+          <h5>
+            <i class="fas fa-circle-dot"></i>
+            &nbsp;Quick Recap
+          </h5>
+        </div>
+
+        <div class="card-body">
+          <div class="row">
+
+            <div class="col-sm-8">
+              <div class="progress-group">
+                <span class="progress-text">Parma-Prod</span>
+                <span class="float-right"><b>11/15</b></span>
+                <div class="progress progress-sm">
+                  <div class="progress-bar bg-success" style="width: 80%">
+                  </div>
+                </div>
+              </div>
+              <div class="progress-group">
+                <span class="progress-text">Torino-Systest</span>
+                <span class="float-right"><b>50/50</b></span>
+                <div class="progress progress-sm">
+                  <div class="progress-bar bg-danger" style="width: 100%">
+                  </div>
+                </div>
+              </div>
+              <div class="progress-group">
+                <span class="progress-text">Moncalieri-Dev</span>
+                <span class="float-right"><b>35/50</b></span>
+                <div class="progress progress-sm">
+                  <div class="progress-bar bg-warning" style="width: 60%">
+                  </div>
+                </div>
+              </div><!-- /.progress-group -->
+
+            </div><!-- col-sm-8 -->
+          </div><!-- row -->
+        </div><!-- card-body -->
+		  </div><!-- card -->
+	  </div><!-- container-fluid -->
+
+	</section>
+</div><!-- content-wrapper -->
+
+<!-- datatable -->
+<script>
+$(function () {
+  let table = $('#clusters').DataTable({
+    dom: '<"button-container"B>lfrtip',
+    responsive: true,
+    ordering: false,
+    buttons: [
+      {
+        extend: 'copy',
+        text: '<i class="fas fa-copy"></i> Copy',
+        className: 'btn btn-light',
+        exportOptions: {
+          columns: ':visible'
+        }
+      },
+      {
+        extend: 'print',
+        text: '<i class="fas fa-print"></i> Print',
+        className: 'btn btn-light',
+        exportOptions: {
+          columns: ':visible'
+        }
+      },
+      {
+        extend: 'csv',
+        text: '<i class="fas fa-file-csv"></i> CSV',
+        className: 'btn btn-light',
+        exportOptions: {
+          columns: ':visible'
+        }
+      },
+      {
+        extend: 'pdf',
+        text: '<i class="fas fa-file-pdf"></i> PDF',
+        className: 'btn btn-light',
+        exportOptions: {
+          columns: ':visible'
+        }
+      }
+      ]
+  });
+
+});
+</script>
+
+<script>
+  $(function () {
+    let table = $('#last_report').DataTable({
+      dom: '<"button-container"B>lfrtip',
+      responsive: true,
+      ordering: false,
+      buttons: [
+        {
+          extend: 'copy',
+          text: '<i class="fas fa-copy"></i> Copy',
+          className: 'btn btn-light',
+          exportOptions: {
+            columns: ':visible'
+          }
+        },
+        {
+          extend: 'print',
+          text: '<i class="fas fa-print"></i> Print',
+          className: 'btn btn-light',
+          exportOptions: {
+            columns: ':visible'
+          }
+        },
+        {
+          extend: 'csv',
+          text: '<i class="fas fa-file-csv"></i> CSV',
+          className: 'btn btn-light',
+          exportOptions: {
+            columns: ':visible'
+          }
+        },
+        {
+          extend: 'pdf',
+          text: '<i class="fas fa-file-pdf"></i> PDF',
+          className: 'btn btn-light',
+          exportOptions: {
+            columns: ':visible'
+          }
+        }
+        ]
+    });
+  
+  });
+  </script>
+
+<!--TABELLA CON PERCENTUALI-->
+<!--
+<div class="card-footer">
+<div class="row">
+    <div class="col-sm-3 col-6">
+    <div class="description-block border-right">
+        <span class="description-percentage text-success"><i class="fas fa-caret-up"></i> 17%</span>
+        <h5 class="description-header">$35,210.43</h5>
+        <span class="description-text">TOTAL REVENUE</span>
+    </div>
+    </div>
+
+    <div class="col-sm-3 col-6">
+    <div class="description-block border-right">
+        <span class="description-percentage text-warning"><i class="fas fa-caret-left"></i> 0%</span>
+        <h5 class="description-header">$10,390.90</h5>
+        <span class="description-text">TOTAL COST</span>
+    </div>
+    </div>
+    <div class="col-sm-3 col-6">
+    <div class="description-block border-right">
+        <span class="description-percentage text-success"><i class="fas fa-caret-up"></i> 20%</span>
+        <h5 class="description-header">$24,813.53</h5>
+        <span class="description-text">TOTAL PROFIT</span>
+    </div>
+    </div>
+    <div class="col-sm-3 col-6">
+    <div class="description-block">
+        <span class="description-percentage text-danger"><i class="fas fa-caret-down"></i> 18%</span>
+        <h5 class="description-header">1200</h5>
+        <span class="description-text">GOAL COMPLETIONS</span>
+    </div>
+    </div>
+</div>
+</div>
+-->
+<!-- /.TABELLA CON PERCENTUALI-->
+{% endblock %}

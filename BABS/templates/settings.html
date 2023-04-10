@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content-wrapper">
+<!-- Content Header (Page header) -->
+  <section class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-8">
+  		  	<nav aria-label="breadcrumb">
+						<ol class="breadcrumb">
+							<li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li>
+							<li class="breadcrumb-item"><a href="#">Settings</a></li>
+							<li class="breadcrumb-item active" aria-current="page">Alerts</li>
+						</ol>
+					</nav>
+				</div>
+      </div>
+		</div><!-- container-fluid -->
+	</section>
+
+	<!-- Main content -->
+	<section class="content">
+		<div class="container-fluid">
+			<div class="card">
+				<div class="card-header">
+					<h5>
+						<i class="fas fa-bell"></i>
+						&nbsp;Add alert
+					</h5>
+				</div>
+
+				<form id="Form" action="" method="post">
+				{% csrf_token %}
+
+					<div class="card"><!-- first card -->
+						<div class="card-header">
+							<h6>
+								<i class="fas fa-server"></i>
+								&nbsp;Select cluster
+							</h6>
+						</div>
+
+						<div class="card-body">
+							<div class="row">
+								<div class="col-sm-8">
+									<div class="input-group mb-3">
+										<div class="input-group-prepend">
+											<span class="input-group-text"><i class="fas fa-circle-nodes"></i>
+											</span>
+										</div>
+										<select id="clusters" name="cluster" class="form-control" required>
+										</select>
+									</div>
+
+								</div><!-- col-sm-8 -->
+							</div><!-- row -->
+						</div><!-- card-body -->
+					</div><!-- card -->
+
+					<div class="card"><!-- second card -->
+							<div class="card-header">
+								<h6>
+									<i class="fas fa-bell"></i>
+									&nbsp;Set threshold
+								</h6>
+							</div>
+
+							<div class="card-body">
+								<div class="row">
+									<div class="col-sm-8">
+										<div class="input-group mb-3">
+											<div class="input-group-prepend">
+												<span class="input-group-text"><i class="fas fa-id-card"></i></span>
+											</div><!-- input-group-prepend -->
+												<input type="text" name="threshold" placeholder="License threshold" class="form-control pull-right" required>
+										</div><!-- input-group mb-3 -->
+									</div><!-- col-sm-8 -->
+								</div><!-- row -->
+							</div><!-- card body -->
+					</div><!-- card -->
+
+					<div class="card"><!-- third card -->
+						<div class="card-header">
+							<h6>
+								<i class="fas fa-envelope"></i>
+								&nbsp;Add emails
+							</h6>
+						</div>
+
+						<div class="card-body">
+
+								<div class="row">
+									<div class="col-sm-8">
+										<div id="inputFormRow">
+											<div class="input-group mb-3">
+												<div class="input-group-prepend">
+													<span class="input-group-text"><i class="fas fa-envelope"></i></span>
+												</div><!-- input-group-prepend -->
+
+
+												<div class="input-group-append">
+													<button type="button" class="btn add btn-primary" id="addRow"><i class="fas fa-plus"></i>
+													Add email
+													</button>
+												</div><!-- input-group-append -->
+											</div><!-- input-group mb-3 -->
+										</div><!-- inputFormRow -->
+
+										<div id="newRow"></div>
+
+									</div><!-- col-sm-8 -->
+								</div><!-- row -->
+						</div><!-- card body -->
+					</div><!-- card -->
+
+				<!-- Pulsante submit -->
+				<button type="submit" class="submit btn btn-primary btn-block" name="submit" id="submit" value="Submit">Save</button>
+				</form>
+
+			</div><!-- card-group -->
+		</div><!-- container-fluid -->
+
+	</section>
+</div><!-- content-wrapper -->
+{% endblock %}
