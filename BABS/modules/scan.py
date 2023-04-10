@@ -22,12 +22,11 @@ refresh_interval = args.refresh_interval
 value_threshold = args.value_threshold
 depth = args.depth
 
-# API URI
-snapshot_uri = 'https://api.binance.com/api/v3/depth?symbol=' + symbol + '&limit=' + depth
+api_uri = 'https://api.binance.com/api/v3/depth?symbol=' + symbol + '&limit=' + depth
 
 # Get order book snapshot from Binance API
-def get_snapshot(snapshot_uri):
-    resp = requests.get(snapshot_uri)
+def get_snapshot(api_uri):
+    resp = requests.get(api_uri)
     snapshot = resp.json()
 
     return snapshot
@@ -35,7 +34,7 @@ def get_snapshot(snapshot_uri):
 
 # Retrieve last snapshot from API and filter price levels
 def get_last_api_data():
-    snapshot = get_snapshot(snapshot_uri)
+    snapshot = get_snapshot(api_uri)
 
     # Create dictionaries with yielded results
     bids = {float(price): float(qty) for price, qty in snapshot['bids']}
@@ -51,27 +50,36 @@ def get_last_api_data():
     return last_api_data
 
 
-def get_symbol_db_record(symbol):
+def get_db_conn():
     # Establish a connection to the PostgreSQL database
     conn = psycopg2.connect(database="babs", user=POSTGRESQL_USR, password=POSTGRESQL_PWD, host="127.0.0.1", port="5432")
+
+    return conn
+
+
+def get_db_cursor():
+    conn = get_db_conn()
 
     # Open a cursor to perform database operations
     cur = conn.cursor()
 
-    # Execute the SQL query to select all rows where the 'symbol' field is equal to symbol
-    cur.execute("SELECT json_data FROM frontend_scanresults WHERE json_data ->> 'symbol' = " + symbol)
+    return cur
 
+
+def get_symbol_db_record(symbol):
+    cur = get_db_cursor()
+
+    # Select all rows where the 'symbol' field is equal to symbol
+    # cur.execute("SELECT json_data FROM frontend_scanresults WHERE json_data ->> 'symbol' = %s", [symbol])
+    cur.execute('SELECT json_data FROM frontend_scanresults')
     # Fetch all rows returned by the query
     rows = cur.fetchall()
 
     # Process each row and extract the JSON data
-    for row in rows:
-        json_data = json.loads(row[0])
-        # Do something with the JSON data
-        return json_data
+    # for row in rows:
+    #     json_data = json.loads(row[0])
 
-    cur.close()
-    conn.close()
+    return rows
 
 
 # Find common filtered price levels and save in database
@@ -80,16 +88,20 @@ def filter_levels():
     last_api_data = get_last_api_data()
     try:
         # Retrieve last record from db
-        result = get_symbol_db_record(symbol)
-
+        json_data = get_symbol_db_record(symbol)
+        print(json_data)
         # oldest_timestamp_data = ScanResults.objects.filter(json_data__symbol='BTCUSDT').filter(json_data__first_scan=True).order_by('json_data__timestamp')
         # latest_timestamp_data = ScanResults.objects.filter(json_data__symbol='BTCUSDT').filter(json_data__first_scan=True).order_by('-json_data__timestamp')
     except psycopg2.errors.UndefinedColumn:
         # first run case, save in db
         last_api_data["first_scan"] = True
-        #result = json.dumps(last_api_data) # Convert result dictionary to JSON object
-        #document = json.loads(result)
-        print('no results, saving to database')
+        json_data = json.dumps(last_api_data) # Serialize dictionary to a JSON string
+        cur = get_db_cursor()
+        cur.execute("INSERT INTO frontend_scanresults (json_data) VALUES (%s)", [json_data])
+        conn = get_db_conn()
+        conn.commit()
+        cur.close()
+        conn.close()
     except Exception as e:
         raise e
         '''
