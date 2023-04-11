@@ -50,36 +50,21 @@ def get_last_api_data():
     return last_api_data
 
 
-def get_db_conn():
-    # Establish a connection to the PostgreSQL database
-    conn = psycopg2.connect(database="babs", user=POSTGRESQL_USR, password=POSTGRESQL_PWD, host="127.0.0.1", port="5432")
-
-    return conn
-
-
-def get_db_cursor():
-    conn = get_db_conn()
-
-    # Open a cursor to perform database operations
+def get_symbol_db_record(symbol):
+    conn = psycopg2.connect(database="babspostgres", user=POSTGRESQL_USR, password=POSTGRESQL_PWD, host="127.0.0.1", port="5432")
     cur = conn.cursor()
 
-    return cur
-
-
-def get_symbol_db_record(symbol):
-    cur = get_db_cursor()
-
     # Select all rows where the 'symbol' field is equal to symbol
-    # cur.execute("SELECT json_data FROM frontend_scanresults WHERE json_data ->> 'symbol' = %s", [symbol])
-    cur.execute('SELECT json_data FROM frontend_scanresults')
+    cur.execute("SELECT json_data FROM frontend_scanresults WHERE json_data ->> 'symbol' = %s", [symbol])
+
     # Fetch all rows returned by the query
     rows = cur.fetchall()
 
     # Process each row and extract the JSON data
-    # for row in rows:
-    #     json_data = json.loads(row[0])
+    for row in rows:
+        json_data = json.loads(row[0])
 
-    return rows
+    return json_data
 
 
 # Find common filtered price levels and save in database
@@ -90,40 +75,42 @@ def filter_levels():
         # Retrieve last record from db
         json_data = get_symbol_db_record(symbol)
         print(json_data)
+
         # oldest_timestamp_data = ScanResults.objects.filter(json_data__symbol='BTCUSDT').filter(json_data__first_scan=True).order_by('json_data__timestamp')
         # latest_timestamp_data = ScanResults.objects.filter(json_data__symbol='BTCUSDT').filter(json_data__first_scan=True).order_by('-json_data__timestamp')
-    except psycopg2.errors.UndefinedColumn:
+    except UnboundLocalError:
         # first run case, save in db
         last_api_data["first_scan"] = True
+        conn = psycopg2.connect(database="babspostgres", user=POSTGRESQL_USR, password=POSTGRESQL_PWD, host="127.0.0.1", port="5432")
+        cur = conn.cursor()
         json_data = json.dumps(last_api_data) # Serialize dictionary to a JSON string
-        cur = get_db_cursor()
-        cur.execute("INSERT INTO frontend_scanresults (json_data) VALUES (%s)", [json_data])
-        conn = get_db_conn()
+        # save_query = """INSERT INTO frontend_scanresults (JSON_DATA) VALUES ('{"name":"John", "age":30, "car":"null"}')"""
+        save_query = """INSERT INTO frontend_scanresults (JSON_DATA) VALUES (%s)"""
+        cur.execute(save_query, (json_data,))
         conn.commit()
         cur.close()
         conn.close()
-    except Exception as e:
-        raise e
-        '''
-        # since the second execution, compare new API data with db snapshot
-        # initialize an empty dictionary for the output
-        output_dict = {'symbol': db_record['symbol'], 'bids': {}, 'asks': {}}
 
-        # loop through the bids in db dictionary and check if they appear in last API snapshot
-        for bid_price, bid_quantity in db_record['bids'].items():
-            if float(bid_price) in last_api_data['bids']:
-                output_dict['bids'][float(bid_price)] = last_api_data['bids'][float(bid_price)]
+    '''
+    # since the second execution, compare new API data with db snapshot
+    # initialize an empty dictionary for the output
+    output_dict = {'symbol': db_record['symbol'], 'bids': {}, 'asks': {}}
 
-        # loop through the asks in db dictionary and check if they appear in last API snapshot
-        for ask_price, ask_quantity in db_record['asks'].items():
-            if float(ask_price) in last_api_data['asks']:
-                output_dict['asks'][float(ask_price)] = last_api_data['asks'][float(ask_price)]
+    # loop through the bids in db dictionary and check if they appear in last API snapshot
+    for bid_price, bid_quantity in db_record['bids'].items():
+        if float(bid_price) in last_api_data['bids']:
+            output_dict['bids'][float(bid_price)] = last_api_data['bids'][float(bid_price)]
 
-        # Add database snapshot with new data
-        timestamp = datetime.datetime.now()
-        output_dict["date"] = timestamp.isoformat()
-        result = json.dumps(output_dict) # Convert result dictionary to JSON object
-        '''
+    # loop through the asks in db dictionary and check if they appear in last API snapshot
+    for ask_price, ask_quantity in db_record['asks'].items():
+        if float(ask_price) in last_api_data['asks']:
+            output_dict['asks'][float(ask_price)] = last_api_data['asks'][float(ask_price)]
+
+    # Add database snapshot with new data
+    timestamp = datetime.datetime.now()
+    output_dict["date"] = timestamp.isoformat()
+    result = json.dumps(output_dict) # Convert result dictionary to JSON object
+    '''
 
 
 filter_levels()
