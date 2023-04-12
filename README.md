@@ -13,11 +13,11 @@ When running for the first time:
 
 1. Connects to the Binance API for fetching latest order book data for the chosen symbol using maximum scan depth (last 5000 bids & asks) allowed by Binance
 3. Filters price levels basing on USD order value (price * quantity) set by the user
-3. Saves data to Mongodb
+3. Saves data in database
 
 Next time it runs:
 
-4. Connects to Mongodb for fetching previous symbol snapshot
+4. Connects to database for fetching previous symbol snapshot
 6. Repeats step 1
 7. Compares latest data from API with data saved inside the database in order to find common price levels
 8. Creates a new object containing common price levels with updated quantities
@@ -51,7 +51,7 @@ value_threshold = 400000.00 (in USD)
 7. Run `python babs.py`
 
 
-## TODO
+## DEV branch
 - Add django
 - Line chart for prices and quantities
 - Extend trading pair selection to All pairs or specific trading pairs selected by the user
