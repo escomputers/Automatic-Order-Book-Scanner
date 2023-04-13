@@ -20,7 +20,7 @@ from frontend.models import ScanResults
 parser = argparse.ArgumentParser()
 parser.add_argument('-s', '--symbol', type=str, help='Trading pair: e.g. BTCUSDT', required=True)
 parser.add_argument('-i', '--refresh_interval', type=float, help='Refresh interval in seconds: e.g. 5.0', required=True)
-# parser.add_argument('-g', '--group', type=int, help='How many price levels to be grouped : e.g. 100', required=True)
+parser.add_argument('-g', '--group', type=int, help='How many digits to be grouped in price : e.g. 100', required=True)
 parser.add_argument('-d', '--depth', type=str, help='Max depth (range 1-5000)', required=True)
 
 args = parser.parse_args()
@@ -29,6 +29,7 @@ args = parser.parse_args()
 symbol = args.symbol.upper()
 refresh_interval = args.refresh_interval
 depth = args.depth
+group_level = args.group
 
 api_uri = 'https://api.binance.com/api/v3/depth?symbol=' + symbol + '&limit=' + depth
 
@@ -53,7 +54,7 @@ def aggregate(orders):
     price_groups = {}
     for price, quantity in orders.items():
         # Determine the price group
-        price_group = int(price / 100) * 100
+        price_group = int(price / group_level) * group_level
 
         # If the price group doesn't exist yet, create it
         if price_group not in price_groups:
@@ -77,13 +78,13 @@ def run():
     # Create instances of ScanResults model
     scan_results = [
         ScanResults(
-            timestamp=timezone.now(),
+            timestamp=timezone.now(), # UTC
             symbol=symbol,
             bids=aggregate(api_data['bids']),
             asks=aggregate(api_data['asks']),
         )
     ]
-    print(scan_results)
+    ScanResults.objects.bulk_create(scan_results)
 
 
 run()
