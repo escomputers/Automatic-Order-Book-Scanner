@@ -1,21 +1,20 @@
 import requests
-import psycopg2
 import argparse
 import os
-import json
 import os
 import sys
 
-# Get database name
+# Initialize Django project environment
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(BASE_DIR)
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'BABS.settings')
-from django.conf import settings
-database_name = settings.DATABASES['default']['NAME']
+import django
+django.setup()
 
 
-POSTGRESQL_USR = os.getenv('POSTGRESQL_USR')
-POSTGRESQL_PWD = os.getenv('POSTGRESQL_PWD')
+from django.utils import timezone
+from frontend.models import ScanResults
+
 
 # Define arguments
 parser = argparse.ArgumentParser()
@@ -74,20 +73,17 @@ def aggregate(orders):
 
 def run():
     api_data = get_api_data(api_uri)
-    bids = aggregate(api_data['bids'])
-    asks = aggregate(api_data['asks'])
 
-    '''
-    conn = psycopg2.connect(database=database_name, user=POSTGRESQL_USR, password=POSTGRESQL_PWD, host="127.0.0.1", port="5432")
-    cur = conn.cursor()
-    bids = json.dumps(bids) # Serialize dictionary to a JSON string
-    asks = json.dumps(asks)
-    save_query = """INSERT INTO frontend_scanresults (bids) VALUES (%s)"""
-    cur.execute(save_query, (bids,))
-    conn.commit()
-    cur.close()
-    conn.close()
-    '''
+    # Create instances of ScanResults model
+    scan_results = [
+        ScanResults(
+            timestamp=timezone.now(),
+            symbol=symbol,
+            bids=aggregate(api_data['bids']),
+            asks=aggregate(api_data['asks']),
+        )
+    ]
+    print(scan_results)
 
 
 run()
