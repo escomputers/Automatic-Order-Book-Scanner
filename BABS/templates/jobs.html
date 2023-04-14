@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="content-wrapper">
+<!-- Content Header (Page header) -->
+  <section class="content-header">
+    <div class="container-fluid">
+		</div><!-- container-fluid -->
+	</section>
+
+	<!-- Main content -->
+	<section class="content">
+		<div class="container-fluid">
+			<div class="card">
+				<div class="card-header">
+					<h5>
+						<i class="fas fa-plus"></i>
+						&nbsp;Add scan job
+					</h5>
+				</div>
+
+				<form id="Form" action="" method="post">
+				{% csrf_token %}
+
+					<div class="card"><!-- first card -->
+						<div class="card-header">
+							<h6>
+								<i class="fas fa-coins"></i>
+								&nbsp;Select trading pair
+							</h6>
+						</div>
+
+						<div class="card-body">
+							<div class="row">
+								<div class="col-sm-8">
+									<div class="input-group mb-3">
+										<select id="pairs" name="pairs" id="pairs" class="form-control" style="width: 100%;" required>
+										</select>
+									</div>
+
+								</div><!-- col-sm-8 -->
+							</div><!-- row -->
+						</div><!-- card-body -->
+					</div><!-- card -->
+
+					<div class="card"><!-- second card -->
+							<div class="card-header">
+								<h6>
+									<i class="fas fa-arrows-rotate"></i>
+									&nbsp;Set refresh interval
+								</h6>
+							</div>
+
+							<div class="card-body">
+								<div class="row">
+									<div class="col-sm-8">
+										<div class="input-group mb-3">
+											<div class="input-group-prepend">
+												<span class="input-group-text"><i class="fas fa-clock"></i></span>
+											</div><!-- input-group-prepend -->
+												<input type="text" name="refresh-interval" data-toggle="tooltip" title="How many seconds between a scan and the next one" placeholder="In seconds: e.g. 5.0" class="form-control pull-right" required>
+										</div><!-- input-group mb-3 -->
+									</div><!-- col-sm-8 -->
+								</div><!-- row -->
+							</div><!-- card body -->
+					</div><!-- card -->
+
+					<div class="card"><!-- third card -->
+						<div class="card-header">
+							<h6>
+								<i class="fas fa-arrow-up-1-9"></i>
+								&nbsp;Set scan depth
+							</h6>
+						</div>
+
+						<div class="card-body">
+								<div class="row">
+									<div class="col-sm-8">
+											<div class="input-group mb-3">
+												<div class="input-group-prepend">
+													<span class="input-group-text"><i class="fas fa-calculator"></i></span>
+												</div><!-- input-group-prepend -->
+												  <input type="text" name="threshold" placeholder="Max Binance depth: 5000" class="form-control pull-right" required>
+											</div><!-- input-group mb-3 -->
+									</div><!-- col-sm-8 -->
+								</div><!-- row -->
+						</div><!-- card body -->
+					</div><!-- card -->
+
+
+					<div class="card"><!-- fourth card -->
+						<div class="card-header">
+							<h6>
+								<i class="fas fa-chart-simple"></i>
+								&nbsp;Set grouping level
+							</h6>
+						</div>
+
+						<div class="card-body">
+								<div class="row">
+									<div class="col-sm-8">
+											<div class="input-group mb-3">
+												<div class="input-group-prepend">
+													<span class="input-group-text"><i class="fas fa-chart-bar"></i></span>
+												</div><!-- input-group-prepend -->
+												  <input type="text" name="threshold" placeholder="e.g. 100" class="form-control pull-right" required>
+											</div><!-- input-group mb-3 -->
+									</div><!-- col-sm-8 -->
+								</div><!-- row -->
+						</div><!-- card body -->
+					</div><!-- card -->
+
+
+				<!-- Pulsante submit -->
+				<button type="submit" class="submit btn btn-primary btn-block" name="submit" id="submit" value="Submit">Save</button>
+				</form>
+
+			</div><!-- card-group -->
+		</div><!-- container-fluid -->
+
+	</section>
+</div><!-- content-wrapper -->
+
+<!-- Get symbols -->
+<script>
+	$.ajax({
+		url: 'https://api.binance.com/api/v1/exchangeInfo',
+		success: function(data) {
+			filterSymbols(data)
+			}
+	})
+	function filterSymbols(data) {
+		const quote = 'USDT'
+		const allSymbols = data.symbols
+		const USDTpairs = allSymbols.map(
+		(x)=> {
+				if (x.quoteAsset.includes(quote) && x.status === 'TRADING') {
+						return x.baseAsset
+						}
+				}
+		).filter((x)=> {if(x){return x}})
+
+		const regex1 = /UP$/
+		const regex2 = /DOWN$/
+		const regex3 = /BULL$/
+		const regex4 = /BEAR$/
+		const garbage1 = $.grep(USDTpairs, function (e) {
+			return regex1.test(e);
+		});
+		const garbage2 = $.grep(USDTpairs, function (e) {
+			return regex2.test(e);
+		});
+		const garbage3 = $.grep(USDTpairs, function (e) {
+			return regex3.test(e);
+		});
+		const garbage4 = $.grep(USDTpairs, function (e) {
+			return regex4.test(e);
+		});
+		const marginCoins1 = $.merge(garbage1, garbage2)
+		const marginCoins2 = $.merge(garbage3, garbage4)
+		const marginCoins = $.merge(marginCoins1, marginCoins2)
+		const filteredUSDTpairs = $.grep(USDTpairs, function(value) {
+			return $.inArray(value, marginCoins) < 0;
+		});
+		let $select = $('#pairs'); 
+		$select.find('option').remove();  
+		$.each(filteredUSDTpairs,function(key, value)
+		{
+			$select.append('<option value=' + key + '>' + value + '</option>');
+		});
+	}
+</script>
+
+<script>
+$(function () {
+		// bootstrap tooltip
+		$('[data-toggle="tooltip"]').tooltip();
+
+		function addIcons (icon) {
+			if (!icon.id) { return icon.text; }
+				let $icon = $(
+					'<span><img src="{% static 'images/coins/' %}' + icon.text +
+					'.png"/> '  + icon.element.text + '</span>'
+				);
+			return $icon;
+		};
+
+		$('#pairs').select2({
+			theme: 'bootstrap4',
+			templateResult: addIcons,
+		});
+})
+</script>
+
+<script>
+	/*
+	const url = "https://api.binance.com/api/v3/exchangeInfo";
+
+	async function getTradingPairs() {
+		try {
+			const response = await fetch(url);
+			const data = await response.json();
+			const symbols = data.symbols;
+			const tradingPairs = symbols
+				.filter(symbol => symbol.quoteAsset === 'USDT' || symbol.quoteAsset === 'BUSD')
+				.map(symbol => symbol.symbol);
+			console.log(tradingPairs);
+		} catch (error) {
+			console.error(error);
+		}
+	}
+	
+	getTradingPairs();
+	*/
+</script>
+{% endblock %}
