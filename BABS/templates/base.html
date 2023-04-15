@@ -60,11 +60,16 @@
   <link rel="stylesheet" href="{% static 'plugins/datatables/css/responsive.bootstrap4.min.css' %}" >
   <link rel="stylesheet" href="{% static 'plugins/datatables/css/buttons.bootstrap4.min.css' %}" >
 
-  <!-- ChartJS -->
+  <!-- Jquery validation -->
+  <script src="{% static 'plugins/jquery-validation/jquery.validate.min.js' %}"></script>
+  <script src="{% static 'plugins/jquery-validation/additional-methods.min.js' %}"></script>
+
+  <!-- ChartJS 
 	<script src="{% static 'plugins/chartjs/js/chart.min.js' %}"></script>
   <script src="{% static 'plugins/chartjs/js/chart.umd.min.js' %}"></script>
   <script src="{% static 'plugins/chartjs/js/helpers.min.js' %}"></script>
-
+  -->
+  
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -112,7 +117,7 @@
         <li class="nav-item">
           <a href="{% url 'jobs' %}" class="nav-link">
             <i class="fa fa-person-digging nav-icon"></i>
-            <p>Jobs</p>
+            <p>Add job</p>
           </a>
         </li>
 

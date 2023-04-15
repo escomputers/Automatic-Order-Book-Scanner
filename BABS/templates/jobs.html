@@ -59,7 +59,7 @@
 											<div class="input-group-prepend">
 												<span class="input-group-text"><i class="fas fa-clock"></i></span>
 											</div><!-- input-group-prepend -->
-												<input type="text" name="refresh-interval" data-toggle="tooltip" title="How many seconds between a scan and the next one" placeholder="In seconds: e.g. 5.0" class="form-control pull-right" required>
+												<input type="text" name="refreshinterval" data-toggle="tooltip" title="How many seconds between a scan and the next one" placeholder="In seconds: min value 5.0" class="form-control pull-right">
 										</div><!-- input-group mb-3 -->
 									</div><!-- col-sm-8 -->
 								</div><!-- row -->
@@ -81,7 +81,7 @@
 												<div class="input-group-prepend">
 													<span class="input-group-text"><i class="fas fa-calculator"></i></span>
 												</div><!-- input-group-prepend -->
-												  <input type="text" name="threshold" placeholder="Max Binance depth: 5000" class="form-control pull-right" required>
+												  <input type="text" name="depth" data-toggle="tooltip" title="How many price levels to scan within symbol's order book" placeholder="Max Binance depth: 5000" class="form-control pull-right">
 											</div><!-- input-group mb-3 -->
 									</div><!-- col-sm-8 -->
 								</div><!-- row -->
@@ -104,7 +104,7 @@
 												<div class="input-group-prepend">
 													<span class="input-group-text"><i class="fas fa-chart-bar"></i></span>
 												</div><!-- input-group-prepend -->
-												  <input type="text" name="threshold" placeholder="e.g. 100" class="form-control pull-right" required>
+												  <input type="text" name="grouping" data-toggle="tooltip" title="How many price digits to be grouped" placeholder="e.g. 100" class="form-control pull-right">
 											</div><!-- input-group mb-3 -->
 									</div><!-- col-sm-8 -->
 								</div><!-- row -->
@@ -172,6 +172,7 @@
 	}
 </script>
 
+<!-- Initialize Tooltip and Select + addIcons to symbols-->
 <script>
 $(function () {
 		// bootstrap tooltip
@@ -193,25 +194,50 @@ $(function () {
 })
 </script>
 
+<!-- Fields validation -->
 <script>
-	/*
-	const url = "https://api.binance.com/api/v3/exchangeInfo";
+	$().ready(function() {
+		// rule grouping
+		let ruleSet = {
+			required: true,
+			number: true,
+			range: [0.5, 200],
+			maxlength: 6
+		};
+		// validate signup form on keyup and submit
+		$("#Form").validate({
+      validClass: "font-weight-bold alert-success",
+      errorClass: "font-weight-bold alert-danger",
+			rules: {
+				refreshinterval: {
+					required: true,
+					number: true,
+					min: 5
+				},
+        depth: {
+					required: true,
+					number: true,
+					min: 10,
+					max: 5000
+				},
+        grouping: {
+          required: true,
+					number: true,
+					min: 1,
+					max: 10000
+        }
+			},
+      // change css class to error
+      highlight: function (element, errorClass, validClass) {
+        $(element).addClass(errorClass).removeClass("font-weight-bold alert-success");
+      },
 
-	async function getTradingPairs() {
-		try {
-			const response = await fetch(url);
-			const data = await response.json();
-			const symbols = data.symbols;
-			const tradingPairs = symbols
-				.filter(symbol => symbol.quoteAsset === 'USDT' || symbol.quoteAsset === 'BUSD')
-				.map(symbol => symbol.symbol);
-			console.log(tradingPairs);
-		} catch (error) {
-			console.error(error);
-		}
-	}
-	
-	getTradingPairs();
-	*/
+      // change css class to success
+      unhighlight: function (element, errorClass, validClass) {
+        $(element).removeClass(errorClass).addClass("font-weight-bold alert-success");
+      }
+
+		});
+	}); // end main $().ready(function()
 </script>
 {% endblock %}
