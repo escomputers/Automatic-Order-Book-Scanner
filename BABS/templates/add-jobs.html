@@ -16,7 +16,7 @@
 				<div class="card-header">
 					<h5>
 						<i class="fas fa-plus"></i>
-						&nbsp;Add scan job
+						&nbsp;Add scan jobs
 					</h5>
 				</div>
 
@@ -27,7 +27,7 @@
 						<div class="card-header">
 							<h6>
 								<i class="fas fa-coins"></i>
-								&nbsp;Select trading pair
+								&nbsp;Select <strong>USDT</strong> trading pair
 							</h6>
 						</div>
 
@@ -59,7 +59,7 @@
 											<div class="input-group-prepend">
 												<span class="input-group-text"><i class="fas fa-clock"></i></span>
 											</div><!-- input-group-prepend -->
-												<input type="text" name="refreshinterval" data-toggle="tooltip" title="How many seconds between a scan and the next one" placeholder="In seconds: min value 5.0" class="form-control pull-right">
+												<input type="text" name="refreshinterval" data-toggle="tooltip" title="How many seconds between a scan and the next one" placeholder="Min seconds: 5.0" class="form-control pull-right">
 										</div><!-- input-group mb-3 -->
 									</div><!-- col-sm-8 -->
 								</div><!-- row -->
@@ -81,7 +81,7 @@
 												<div class="input-group-prepend">
 													<span class="input-group-text"><i class="fas fa-calculator"></i></span>
 												</div><!-- input-group-prepend -->
-												  <input type="text" name="depth" data-toggle="tooltip" title="How many price levels to scan within symbol's order book" placeholder="Max Binance depth: 5000" class="form-control pull-right">
+												  <input type="text" name="depth" data-toggle="tooltip" title="How many price levels to scan within symbol's order book" placeholder="Max depth: 5000" class="form-control pull-right">
 											</div><!-- input-group mb-3 -->
 									</div><!-- col-sm-8 -->
 								</div><!-- row -->
@@ -113,7 +113,7 @@
 
 
 				<!-- Pulsante submit -->
-				<button type="submit" class="submit btn btn-primary btn-block" name="submit" id="submit" value="Submit">Save</button>
+				<button name="submit" class="submit btn btn-primary btn-block" type="submit">Save</button>
 				</form>
 
 			</div><!-- card-group -->
@@ -196,7 +196,19 @@ $(function () {
 
 <!-- Fields validation -->
 <script>
+	"use strict";
+
 	$().ready(function() {
+
+		let usr_data = {};
+
+		// action when all fields are valid
+		$.validator.setDefaults({
+			submitHandler: function() {
+				getInputs()
+			}
+		});
+
 		// validate signup form on keyup and submit
 		$("#Form").validate({
       validClass: "font-weight-bold alert-success",
@@ -231,6 +243,44 @@ $(function () {
       }
 
 		});
+
+		function getInputs() {
+			$(":input").each(function() {
+				usr_data[$(this).attr("name")] = $(this).val();
+			})
+
+			// get coin selection and add to usr_data
+			if ($("#pairs").is(":visible")) {
+				const coin = $( "#pairs option:selected" ).text();
+				usr_data.pair = coin + 'USDT';
+			}
+
+			// delete useless data from object
+			;['pairs', 'submit' ].forEach(i => delete usr_data[i])
+
+			//send data to backend
+			ajax_call()
+		}
+
+		// ajax call
+		function ajax_call() {
+			$.ajax({
+				url: "{% url 'addjobs' %}",
+				dataType: "text",
+				method: "POST",
+				data : {
+				csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+				data: JSON.stringify(usr_data),
+				},
+				success: function(data, status, xhr){
+					location.reload();
+				},
+				error: function(xhr, status, error){
+				}
+			})
+
+		}
+
 	}); // end main $().ready(function()
 </script>
 {% endblock %}
