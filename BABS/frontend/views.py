@@ -7,7 +7,7 @@ def home(request):
     return render(request, 'home.html')
 
 
-def addjobs(request):
+def addtasks(request):
     if request.method == 'POST':
         # Get ajax dictionary from frontend
         usrdata = json.loads(request.POST['data'])
@@ -20,11 +20,13 @@ def addjobs(request):
             'D' + usrdata['depth']
 
         # Assign task to DjangoQ
-        schedule('modules.scan', usrdata['pair'], usrdata['grouping'], 
-            usrdata['depth'], name=name,
+        schedule('frontend.utils.Scan',
+            usrdata['pair'], usrdata['grouping'], usrdata['depth'],
+            name=name,
             schedule_type=Schedule.MINUTES, 
-            minutes=int(usrdata['refreshinterval'])
+            minutes=int(usrdata['refreshinterval']),
+            repeats=-1
         )
 
 
-    return render(request, 'add-jobs.html')
+    return render(request, 'add-tasks.html')

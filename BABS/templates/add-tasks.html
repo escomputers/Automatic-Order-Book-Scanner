@@ -16,7 +16,7 @@
 				<div class="card-header">
 					<h5>
 						<i class="fas fa-plus"></i>
-						&nbsp;Add scan jobs
+						&nbsp;Add scan tasks
 					</h5>
 				</div>
 
@@ -266,7 +266,7 @@ $(function () {
 		// ajax call
 		function ajax_call() {
 			$.ajax({
-				url: "{% url 'addjobs' %}",
+				url: "{% url 'addtasks' %}",
 				dataType: "text",
 				method: "POST",
 				data : {
