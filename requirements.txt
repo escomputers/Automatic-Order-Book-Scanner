@@ -1,5 +1,4 @@
 django==4.2
 requests
-certifi
 psycopg2
 django-q
