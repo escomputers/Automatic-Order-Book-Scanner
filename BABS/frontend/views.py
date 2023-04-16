@@ -16,11 +16,13 @@ def home(request):
             grouping = values[2]
             depth = values[3]
             next_run = i.get('next_run')
-            element = {'symbol': symbol, 
-                       'next_run': next_run,
-                       'interval': interval, 
-                       'grouping': grouping, 
-                       'depth': depth
+            id = i.get('id')
+            element = {'id': id,
+                    'symbol': symbol, 
+                    'next_run': next_run,
+                    'interval': interval, 
+                    'grouping': grouping, 
+                    'depth': depth
             }
             context.append(element)
     except Schedule.DoesNotExist:
