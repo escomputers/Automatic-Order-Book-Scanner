@@ -61,7 +61,6 @@ def Scan(symbol, grouping, depth):
     # Create instances of ScanResults model
     scan_results = [
         ScanResults(
-            timestamp=timezone.now(), # UTC
             symbol=symbol,
             bids=aggregate(api_data['bids']),
             asks=aggregate(api_data['asks']),

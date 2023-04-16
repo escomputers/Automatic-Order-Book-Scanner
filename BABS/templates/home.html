@@ -17,7 +17,7 @@
 	<section class="content">
 		<div class="container-fluid">
 
-      <div class="card"><!-- Clusters table -->
+      <div class="card"><!-- Charts table -->
 				<div class="card-header">
 					<h5>
 						<i class="fas fa-chart-simple"></i>
@@ -26,8 +26,6 @@
 				</div>
 
 				<div class="card-body">
-					
-
 				</div><!-- card body -->
 		  </div><!-- card -->
 
@@ -40,30 +38,26 @@
 				</div>
 
 				<div class="card-body">
-					<table id="last_report" class="table table-borderless table-hover">
+					<table id="active_tasks" class="table table-borderless table-hover">
 						<thead>
 							<tr>
                 <th>Symbol</th>
-                <th>Last run</th>
-                <th>Depth</th>
+                <th>Next run UTC</th>
+                <th>Interval</th>
                 <th>Grouping level</th>
-                <th>Refresh interval</th>
+                <th>Depth</th>
 							</tr>
 						</thead>
 
-						{% if clusters_data %}
+						{% if tasks %}
 						<tbody>
-              {% for i in clusters_data %}
+              {% for task in tasks %}
 							<tr>
-								<td>{{ i.cluster_name }}</td>
-								<td>{{ i.entities_count }}</td>
-                <td>{{ i.threshold }}</td>
-								<td><span class="badge badge-success">Normal</span></td>
-                <td>
-                  <small class="text-muted">
-                    Last check: 2023-01-03 22:32:22
-                  </small>
-                </td>
+								<td>{{ task.symbol }}</td>
+								<td>{{ task.next_run }}</td>
+                <td>{{ task.interval }}<small>&nbsp;mins</small></td>
+								<td>{{ task.grouping }}</td>
+                <td>{{ task.depth }}</td>
 							</tr>
               {% endfor %}
 						</tbody>
@@ -78,59 +72,13 @@
 	</section>
 </div><!-- content-wrapper -->
 
-<!-- datatable -->
-<script>
-$(function () {
-  let table = $('#clusters').DataTable({
-    dom: '<"button-container"B>lfrtip',
-    responsive: true,
-    ordering: false,
-    buttons: [
-      {
-        extend: 'copy',
-        text: '<i class="fas fa-copy"></i> Copy',
-        className: 'btn btn-light',
-        exportOptions: {
-          columns: ':visible'
-        }
-      },
-      {
-        extend: 'print',
-        text: '<i class="fas fa-print"></i> Print',
-        className: 'btn btn-light',
-        exportOptions: {
-          columns: ':visible'
-        }
-      },
-      {
-        extend: 'csv',
-        text: '<i class="fas fa-file-csv"></i> CSV',
-        className: 'btn btn-light',
-        exportOptions: {
-          columns: ':visible'
-        }
-      },
-      {
-        extend: 'pdf',
-        text: '<i class="fas fa-file-pdf"></i> PDF',
-        className: 'btn btn-light',
-        exportOptions: {
-          columns: ':visible'
-        }
-      }
-      ]
-  });
 
-});
-</script>
-
-<!-- Datatable -->
+<!-- Active Tasks Datatable -->
 <script>
   $(function () {
-    let table = $('#last_report').DataTable({
+    let table = $('#active_tasks').DataTable({
       dom: '<"button-container"B>lfrtip',
       responsive: true,
-      ordering: false,
       buttons: [
         {
           extend: 'copy',
