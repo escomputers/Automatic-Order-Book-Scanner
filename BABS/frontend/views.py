@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django_q.tasks import schedule, Schedule
 import json
 from django_q.models import Schedule
@@ -55,3 +55,15 @@ def addtasks(request):
 
 
     return render(request, 'add-tasks.html')
+
+
+def deletetasks(request):
+    # Get ajax variable containing task_id to be removed
+    id = json.loads(request.POST['data'])
+
+    # Delete task object
+    task_object = get_object_or_404(Schedule, pk = id)
+    task_object.delete()
+
+
+    return render(request, 'home.html')
