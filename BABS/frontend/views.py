@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django_q.tasks import schedule
+from django_q.tasks import schedule, Schedule
 import json
 
 
@@ -8,17 +8,23 @@ def home(request):
 
 
 def addjobs(request):
-
     if request.method == 'POST':
         # Get ajax dictionary from frontend
         usrdata = json.loads(request.POST['data'])
 
         request.session['context'] = usrdata
-        print(usrdata)
 
+        name = usrdata['pair'] + '-' + \
+            'I' + usrdata['refreshinterval'] + '-' + \
+            'G' + usrdata['grouping'] + '-' + \
+            'D' + usrdata['depth']
 
         # Assign task to DjangoQ
-        # schedule('django.core.mail.send_mail', subject, msg, from_email, [currentuser.email], fail_silently=False, html_message=html_content, evento_calendar=eventID, schedule_type=Schedule.ONCE, next_run=delta, cluster='DjangORMcalendar')
+        schedule('modules.scan', usrdata['pair'], usrdata['grouping'], 
+            usrdata['depth'], name=name,
+            schedule_type=Schedule.MINUTES, 
+            minutes=int(usrdata['refreshinterval'])
+        )
 
 
     return render(request, 'add-jobs.html')
