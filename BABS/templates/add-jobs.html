@@ -59,7 +59,7 @@
 											<div class="input-group-prepend">
 												<span class="input-group-text"><i class="fas fa-clock"></i></span>
 											</div><!-- input-group-prepend -->
-												<input type="text" name="refreshinterval" data-toggle="tooltip" title="How many seconds between a scan and the next one" placeholder="Min seconds: 5.0" class="form-control pull-right">
+												<input type="text" name="refreshinterval" data-toggle="tooltip" title="How many minutes to wait between a scan and the next one" placeholder="Min minutes: 1.0" class="form-control pull-right">
 										</div><!-- input-group mb-3 -->
 									</div><!-- col-sm-8 -->
 								</div><!-- row -->
@@ -217,7 +217,8 @@ $(function () {
 				refreshinterval: {
 					required: true,
 					number: true,
-					min: 5
+					min: 1,
+					max: 10620
 				},
         depth: {
 					required: true,

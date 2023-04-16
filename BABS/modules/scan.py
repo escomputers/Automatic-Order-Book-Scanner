@@ -1,7 +1,6 @@
 import requests
 import argparse
 import os
-import os
 import sys
 
 # Initialize Django project environment
@@ -18,16 +17,14 @@ from frontend.models import ScanResults
 
 # Define arguments
 parser = argparse.ArgumentParser()
-parser.add_argument('-s', '--symbol', type=str, help='Trading pair: e.g. BTCUSDT', required=True)
-parser.add_argument('-i', '--refresh_interval', type=float, help='Refresh interval in seconds: e.g. 5.0', required=True)
-parser.add_argument('-g', '--group', type=int, help='How many digits to be grouped in price : e.g. 100', required=True)
-parser.add_argument('-d', '--depth', type=str, help='Max depth (range 1-5000)', required=True)
+parser.add_argument('symbol', type=str, help='Trading pair: e.g. BTCUSDT')
+parser.add_argument('group', type=int, help='How many digits to be grouped in price : e.g. 100')
+parser.add_argument('depth', type=str, help='Max depth (range 1-5000)')
 
 args = parser.parse_args()
 
 # Get args
 symbol = args.symbol.upper()
-refresh_interval = args.refresh_interval
 depth = args.depth
 group_level = args.group
 
