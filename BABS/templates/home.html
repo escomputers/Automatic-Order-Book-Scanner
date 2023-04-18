@@ -217,27 +217,14 @@ fetch("{% url 'chartview' %}")
 </script>
 
 <script>
-  function getData() {
-    fetch("{% url 'chartview' %}")
-    .then(response => response.json())
-    .then(data => {
-    let asksData = [];
-    let bidsData = [];
 
-    // iterate over each record in the data
-    data.forEach(record => {
-      let time = record['timestamp']; // set your X-axis value here
-      let asks = JSON.parse(record['asks']);
-      let bids = JSON.parse(record['bids']);
-    }
-  })
+  let orders = "{{ orders }}";
+  let asks = "{{ asks }}";
   console.log(asks)
-}
-  
   const ctx = document.getElementById('chart');
 
   new Chart(ctx, {
-    type: 'line',
+    type: 'scatter',
     data: {
     /*
       labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
@@ -247,36 +234,33 @@ fetch("{% url 'chartview' %}")
         borderWidth: 1
       }]
     */
-    datasets: [
-    {
+    datasets: [{
       label: 'Asks',
-      data: asksData,
+      data: asks[0],
       borderColor: 'red',
       backgroundColor: 'rgba(255, 0, 0, 0.5)',
-      pointRadius: 0,
-      pointHoverRadius: 0,
-      showLine: true
+      borderWidth: 1,
+      //pointRadius: 0,
+      //pointHoverRadius: 0,
+      //showLine: true
     },
     {
       label: 'Bids',
-      data: bidsData,
+      data: [8, 21, 3, 2, 4, 6],
       borderColor: 'green',
       backgroundColor: 'rgba(0, 255, 0, 0.5)',
-      pointRadius: 0,
-      pointHoverRadius: 0,
-      showLine: true
-    }
-  ]
-
-    },
+      borderWidth: 1,
+    }]
+  },
     options: {
-      /*
       scales: {
         y: {
           beginAtZero: true
+        },
+        x: {
+          beginAtZero: true
         }
       }
-      */
     }
   });
 </script>

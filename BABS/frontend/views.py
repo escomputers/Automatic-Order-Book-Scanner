@@ -6,7 +6,12 @@ from django_q.models import Schedule
 from frontend.models import ScanResults
 
 
+
+from django.db.models import Max
+
+
 def home(request):
+    '''
     try:
         context = []
         tasks = Schedule.objects.all().values()
@@ -27,11 +32,38 @@ def home(request):
                     'depth': depth
             }
             context.append(element)
-    except Schedule.DoesNotExist:
-        context = None
+    '''
+    # except Schedule.DoesNotExist:
+    db_objects = ScanResults.objects.all()
+    # context = None
+    asks = []
+    bids = []
+    for order in db_objects:
+        asks_data = order.asks
+        bids_data = order.bids
+        asks_list = []
+        bids_list = []
+        for ask_key, ask_value in asks_data.items():
+            asks_list.append({
+                'x': ask_value['WP'],
+                'y': ask_value['QTY'],
+            })
+        # for bid_key, bid_value in bids_data.items():
+        #     bids_list.append({
+        #         'x': bid_value['WP'],
+        #         'y': bid_value['QTY'],
+        #     })
+        asks.append(asks_list)
+        bids.append(bids_list)
+    Context = {
+        'orders': db_objects,
+        'asks': asks,
+        'bids': bids,
+    }
 
 
-    return render(request, 'home.html', context={'tasks': context})
+
+    return render(request, 'home.html', context={'context': Context}) # , context={'tasks': context}
 
 
 def addtasks(request):
