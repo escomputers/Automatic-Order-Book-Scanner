@@ -1,7 +1,7 @@
 import requests
 import os
 import sys
-
+import json
 
 def Scan(symbol, grouping, depth):
     # Initialize Django project environment
@@ -42,15 +42,15 @@ def Scan(symbol, grouping, depth):
 
             # If the price group doesn't exist yet, create it
             if price_group not in price_groups:
-                price_groups[price_group] = {"Quantity": quantity, "Weighted Price": price * quantity}
+                price_groups[price_group] = {"QTY": quantity, "WP": price * quantity}
             else:
                 # If the price group already exists, update its quantity and weighted price
-                price_groups[price_group]["Quantity"] += quantity
-                price_groups[price_group]["Weighted Price"] += price * quantity
+                price_groups[price_group]["QTY"] += quantity
+                price_groups[price_group]["WP"] += price * quantity
 
         # Calculate the arithmetic mean for each price group
         for price_group in price_groups:
-            price_groups[price_group]["Weighted Price"] /= price_groups[price_group]["Quantity"]
+            price_groups[price_group]["WP"] /= price_groups[price_group]["QTY"]
 
 
         return price_groups
@@ -58,12 +58,15 @@ def Scan(symbol, grouping, depth):
 
     api_data = get_api_data(api_uri)
 
+    bids = json.dumps(aggregate(api_data['bids']))
+    asks = json.dumps(aggregate(api_data['asks']))
+
     # Create instances of ScanResults model
     scan_results = [
         ScanResults(
             symbol=symbol,
-            bids=aggregate(api_data['bids']),
-            asks=aggregate(api_data['asks']),
+            bids=bids,
+            asks=asks,
         )
     ]
     ScanResults.objects.bulk_create(scan_results)

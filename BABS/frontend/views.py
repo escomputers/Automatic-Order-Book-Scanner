@@ -1,7 +1,9 @@
 from django.shortcuts import render, get_object_or_404
 from django_q.tasks import schedule, Schedule
 import json
+from django.http import JsonResponse
 from django_q.models import Schedule
+from frontend.models import ScanResults
 
 
 def home(request):
@@ -67,3 +69,12 @@ def deletetasks(request):
 
 
     return render(request, 'home.html')
+
+
+def chartview(request):
+    try:
+        db_objects = ScanResults.objects.all()
+
+        return JsonResponse({'data': list(db_objects.values())})
+    except ScanResults.DoesNotExist:
+        return JsonResponse({'data': None})

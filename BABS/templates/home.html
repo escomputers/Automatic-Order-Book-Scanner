@@ -26,6 +26,9 @@
 				</div>
 
 				<div class="card-body">
+          <div style="width: 800px;">
+            <canvas id="chart"></canvas>
+          </div>
 				</div><!-- card body -->
 		  </div><!-- card -->
 
@@ -154,5 +157,127 @@
   // Do nothing
   }
 };
+</script>
+
+<!-- ChartJs -->
+<script>
+  /*
+
+// fetch data from your view
+fetch("{% url 'chartview' %}")
+  .then(response => response.json())
+  .then(data => {
+    let asksData = [];
+    let bidsData = [];
+
+    // iterate over each record in the data
+    data.forEach(record => {
+      let time = record['timestamp']; // set your X-axis value here
+      let asks = JSON.parse(record['asks']);
+      let bids = JSON.parse(record['bids']);
+
+      // calculate the biggest quantity for each asks and bids
+      let maxAsk = Math.max(...Object.values(asks).map(o => o.Quantity));
+      let maxBid = Math.max(...Object.values(bids).map(o => o.Quantity));
+
+      // add each point to the appropriate dataset
+      Object.values(asks).forEach(ask => {
+        let point = {
+          x: time,
+          y: ask['Weighted Price'],
+          r: ask['Quantity'] == maxAsk ? 10 : 5 // set the size of the point based on quantity
+        }
+        asksData.push(point);
+      });
+
+      Object.values(bids).forEach(bid => {
+        let point = {
+          x: time,
+          y: bid['Weighted Price'],
+          r: bid['Quantity'] == maxBid ? 10 : 5
+        }
+        bidsData.push(point);
+      });
+    });
+      options: {
+        scales: {
+          xAxes: [{
+            type: 'time',
+            time: {
+              displayFormats: {
+                minute: 'MMM D, h:mm a'
+              }
+            }
+          }],
+          yAxes: [{
+            type: 'linear',
+      
+  });
+*/
+</script>
+
+<script>
+  function getData() {
+    fetch("{% url 'chartview' %}")
+    .then(response => response.json())
+    .then(data => {
+    let asksData = [];
+    let bidsData = [];
+
+    // iterate over each record in the data
+    data.forEach(record => {
+      let time = record['timestamp']; // set your X-axis value here
+      let asks = JSON.parse(record['asks']);
+      let bids = JSON.parse(record['bids']);
+    }
+  })
+  console.log(asks)
+}
+  
+  const ctx = document.getElementById('chart');
+
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+    /*
+      labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+      datasets: [{
+        label: '# of Votes',
+        data: [12, 19, 3, 5, 2, 3],
+        borderWidth: 1
+      }]
+    */
+    datasets: [
+    {
+      label: 'Asks',
+      data: asksData,
+      borderColor: 'red',
+      backgroundColor: 'rgba(255, 0, 0, 0.5)',
+      pointRadius: 0,
+      pointHoverRadius: 0,
+      showLine: true
+    },
+    {
+      label: 'Bids',
+      data: bidsData,
+      borderColor: 'green',
+      backgroundColor: 'rgba(0, 255, 0, 0.5)',
+      pointRadius: 0,
+      pointHoverRadius: 0,
+      showLine: true
+    }
+  ]
+
+    },
+    options: {
+      /*
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+      */
+    }
+  });
 </script>
 {% endblock %}
