@@ -3,6 +3,7 @@ import os
 import sys
 import json
 
+
 def Scan(symbol, grouping, depth):
     # Initialize Django project environment
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -61,12 +62,17 @@ def Scan(symbol, grouping, depth):
     bids = json.dumps(aggregate(api_data['bids']))
     asks = json.dumps(aggregate(api_data['asks']))
 
+    timestamp = timezone.now()
+
     # Create instances of ScanResults model
     scan_results = [
         ScanResults(
             symbol=symbol,
             bids=bids,
             asks=asks,
+            timestamp=timestamp
         )
     ]
     ScanResults.objects.bulk_create(scan_results)
+
+('BTCUSDT', '100', '5000')

@@ -217,10 +217,11 @@ fetch("{% url 'chartview' %}")
 </script>
 
 <script>
+$(function () {
 
-  let orders = "{{ orders }}";
-  let asks = "{{ asks }}";
+  const asks = JSON.parse('{{ context|safe }}')
   console.log(asks)
+
   const ctx = document.getElementById('chart');
 
   new Chart(ctx, {
@@ -236,7 +237,7 @@ fetch("{% url 'chartview' %}")
     */
     datasets: [{
       label: 'Asks',
-      data: asks[0],
+      data: asks,
       borderColor: 'red',
       backgroundColor: 'rgba(255, 0, 0, 0.5)',
       borderWidth: 1,
@@ -263,5 +264,6 @@ fetch("{% url 'chartview' %}")
       }
     }
   });
+});
 </script>
 {% endblock %}

@@ -34,36 +34,21 @@ def home(request):
             context.append(element)
     '''
     # except Schedule.DoesNotExist:
-    db_objects = ScanResults.objects.all()
-    # context = None
-    asks = []
-    bids = []
-    for order in db_objects:
-        asks_data = order.asks
-        bids_data = order.bids
-        asks_list = []
-        bids_list = []
-        for ask_key, ask_value in asks_data.items():
-            asks_list.append({
-                'x': ask_value['WP'],
-                'y': ask_value['QTY'],
-            })
-        # for bid_key, bid_value in bids_data.items():
-        #     bids_list.append({
-        #         'x': bid_value['WP'],
-        #         'y': bid_value['QTY'],
-        #     })
-        asks.append(asks_list)
-        bids.append(bids_list)
-    Context = {
-        'orders': db_objects,
-        'asks': asks,
-        'bids': bids,
-    }
+    rows = ScanResults.objects.all().values()
+    for row in rows:
+        asks_row = []
+        bids_row = []
+        for price, values in row['asks'].items():
+            asks_row.append({'x': price, 'y': values['QTY']})
+        #for price, values in row['bids'].items():
+        #    bids_row.append({'x': price, 'y': values['QTY']})
+        #asks.append(asks_row)
+        #bids.append(bids_row)
+        context = json.dumps(asks_row)
+        # context = {'x': price, 'y': values['QTY']}
 
 
-
-    return render(request, 'home.html', context={'context': Context}) # , context={'tasks': context}
+    return render(request, 'home.html', context={'context': context}) # , context={'tasks': context}
 
 
 def addtasks(request):
