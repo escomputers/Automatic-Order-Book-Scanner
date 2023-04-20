@@ -64,12 +64,9 @@
   <script src="{% static 'plugins/jquery-validation/jquery.validate.min.js' %}"></script>
   <script src="{% static 'plugins/jquery-validation/additional-methods.min.js' %}"></script>
 
-  <!-- ChartJS 
-	<script src="{% static 'plugins/chartjs/js/chart.min.js' %}"></script>
+  <!-- ChartJS -->
   <script src="{% static 'plugins/chartjs/js/chart.umd.min.js' %}"></script>
-  <script src="{% static 'plugins/chartjs/js/helpers.min.js' %}"></script>
-  -->
-  
+
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -118,6 +115,13 @@
           <a href="{% url 'addtasks' %}" class="nav-link">
             <i class="fa fa-list-check nav-icon"></i>
             <p>Add tasks</p>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="{% url 'charts' %}" class="nav-link">
+            <i class="fa fa-chart-bar nav-icon"></i>
+            <p>Charts</p>
           </a>
         </li>
 
