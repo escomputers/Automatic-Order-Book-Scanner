@@ -36,6 +36,7 @@
 <script>
   "use strict";
 $(function () {
+
   const asks = JSON.parse('{{ asks|safe }}');
   const bids = JSON.parse('{{ bids|safe }}')
 
@@ -58,20 +59,10 @@ $(function () {
       backgroundColor: 'rgba(0, 255, 0, 0.5)',
       borderWidth: 1,
     }]
-  },
-    options: {
-      /*
-      scales: {
-        y: {
-          beginAtZero: true
-        },
-        x: {
-          beginAtZero: true
-        }
-      }
-      */
-    }
+  }
   });
+
+
 });
 </script>
 {% endblock %}

@@ -92,7 +92,7 @@
     <!-- Main Sidebar Container -->
     <aside class="main-sidebar sidebar-light-primary elevation-4">
     <!-- Brand Logo -->
-    <a class="brand-link" href="{% url 'dashboard' %}">
+    <a class="brand-link" href="{% url 'tasks' %}">
         <img src="{% static 'images/babs.svg' %}" alt="Logo" class="brand-image" style="opacity: .8">
         <span class="brand-text font-weight-light"><h4><strong>BABS</strong> Dashboard</h4></span>
     </a>
@@ -105,16 +105,9 @@
       <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
 
         <li class="nav-item">
-          <a href="{% url 'dashboard' %}" class="nav-link">
-            <i class="fas fa-home nav-icon"></i>
-            <p>Home</p>
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a href="{% url 'addtasks' %}" class="nav-link">
+          <a href="{% url 'tasks' %}" class="nav-link">
             <i class="fa fa-list-check nav-icon"></i>
-            <p>Add tasks</p>
+            <p>Tasks</p>
           </a>
         </li>
 

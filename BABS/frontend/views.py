@@ -1,16 +1,12 @@
 from django.shortcuts import render, get_object_or_404
 from django_q.tasks import schedule, Schedule
 import json
-from django.http import JsonResponse
+from django.core.exceptions import EmptyResultSet
 from django_q.models import Schedule
 from frontend.models import ScanResults
 
 
-
-from django.db.models import Max
-
-
-def home(request):
+def tasks(request):
     try:
         context = []
         tasks = Schedule.objects.all().values()
@@ -33,34 +29,28 @@ def home(request):
             context.append(element)
     except Schedule.DoesNotExist:
         context = None
+        if request.method == 'POST':
+            # Get ajax dictionary from frontend
+            usrdata = json.loads(request.POST['data'])
+
+            request.session['context'] = usrdata
+
+            name = usrdata['pair'] + '-' + \
+                usrdata['refreshinterval'] + '-' + \
+                usrdata['grouping'] + '-' + \
+                usrdata['depth']
+
+            # Assign task to DjangoQ
+            schedule('frontend.utils.Scan',
+                usrdata['pair'], usrdata['grouping'], usrdata['depth'],
+                name=name,
+                schedule_type=Schedule.MINUTES, 
+                minutes=int(usrdata['refreshinterval']),
+                repeats=-1
+            )
 
 
-    return render(request, 'home.html', context={'tasks': context})
-
-
-def addtasks(request):
-    if request.method == 'POST':
-        # Get ajax dictionary from frontend
-        usrdata = json.loads(request.POST['data'])
-
-        request.session['context'] = usrdata
-
-        name = usrdata['pair'] + '-' + \
-            usrdata['refreshinterval'] + '-' + \
-            usrdata['grouping'] + '-' + \
-            usrdata['depth']
-
-        # Assign task to DjangoQ
-        schedule('frontend.utils.Scan',
-            usrdata['pair'], usrdata['grouping'], usrdata['depth'],
-            name=name,
-            schedule_type=Schedule.MINUTES, 
-            minutes=int(usrdata['refreshinterval']),
-            repeats=-1
-        )
-
-
-    return render(request, 'add-tasks.html')
+    return render(request, 'tasks.html', context={'tasks': context})
 
 
 def deletetasks(request):
@@ -76,23 +66,22 @@ def deletetasks(request):
 
 
 def charts(request):
-    try:
-        rows = ScanResults.objects.all().values()
-        for row in rows:
-            asks_row = []
-            bids_row = []
+    asksjson = None # empty columns case
+    bidsjson = None
 
-            bids_dict = json.loads(row['bids'])
+    rows = ScanResults.objects.all().values()
+    for row in rows:
+        asks_row = []
+        bids_row = []
 
-            for price, values in row['asks'].items():
-                asks_row.append({'x': price, 'y': values['QTY']})
-            for price, values in bids_dict.items():
-                bids_row.append({'x': price, 'y': values['QTY']})
-            asksjson = json.dumps(asks_row)
-            bidsjson = json.dumps(bids_row)
-    except ScanResults.DoesNotExist:
-        asksjson = None
-        bidsjson = None
+        bids_dict = json.loads(row['bids'])
+
+        for price, values in row['asks'].items():
+            asks_row.append({'x': price, 'y': values['QTY']})
+        for price, values in bids_dict.items():
+            bids_row.append({'x': price, 'y': values['QTY']})
+        asksjson = json.dumps(asks_row)
+        bidsjson = json.dumps(bids_row)
 
 
     return render(request, 'charts.html', context={'asks': asksjson, 'bids': bidsjson})
