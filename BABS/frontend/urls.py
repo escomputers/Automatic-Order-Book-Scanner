@@ -5,5 +5,5 @@ urlpatterns = [
     path("", views.home, name="dashboard"),
     path("add-tasks/", views.addtasks, name="addtasks"),
     path("delete-tasks/", views.deletetasks, name="deletetasks"),
-    path("chart-view/", views.chartview, name="chartview")
+    path("charts/", views.charts, name="charts")
 ]

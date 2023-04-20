@@ -11,7 +11,6 @@ from django.db.models import Max
 
 
 def home(request):
-    '''
     try:
         context = []
         tasks = Schedule.objects.all().values()
@@ -32,23 +31,11 @@ def home(request):
                     'depth': depth
             }
             context.append(element)
-    '''
-    # except Schedule.DoesNotExist:
-    rows = ScanResults.objects.all().values()
-    for row in rows:
-        asks_row = []
-        bids_row = []
-        for price, values in row['asks'].items():
-            asks_row.append({'x': price, 'y': values['QTY']})
-        #for price, values in row['bids'].items():
-        #    bids_row.append({'x': price, 'y': values['QTY']})
-        #asks.append(asks_row)
-        #bids.append(bids_row)
-        context = json.dumps(asks_row)
-        # context = {'x': price, 'y': values['QTY']}
+    except Schedule.DoesNotExist:
+        context = None
 
 
-    return render(request, 'home.html', context={'context': context}) # , context={'tasks': context}
+    return render(request, 'home.html', context={'tasks': context})
 
 
 def addtasks(request):
@@ -88,10 +75,24 @@ def deletetasks(request):
     return render(request, 'home.html')
 
 
-def chartview(request):
+def charts(request):
     try:
-        db_objects = ScanResults.objects.all()
+        rows = ScanResults.objects.all().values()
+        for row in rows:
+            asks_row = []
+            bids_row = []
 
-        return JsonResponse({'data': list(db_objects.values())})
+            bids_dict = json.loads(row['bids'])
+
+            for price, values in row['asks'].items():
+                asks_row.append({'x': price, 'y': values['QTY']})
+            for price, values in bids_dict.items():
+                bids_row.append({'x': price, 'y': values['QTY']})
+            asksjson = json.dumps(asks_row)
+            bidsjson = json.dumps(bids_row)
     except ScanResults.DoesNotExist:
-        return JsonResponse({'data': None})
+        asksjson = None
+        bidsjson = None
+
+
+    return render(request, 'charts.html', context={'asks': asksjson, 'bids': bidsjson})

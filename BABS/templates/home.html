@@ -17,21 +17,6 @@
 	<section class="content">
 		<div class="container-fluid">
 
-      <div class="card"><!-- Charts table -->
-				<div class="card-header">
-					<h5>
-						<i class="fas fa-chart-simple"></i>
-						&nbsp;Charts
-					</h5>
-				</div>
-
-				<div class="card-body">
-          <div style="width: 800px;">
-            <canvas id="chart"></canvas>
-          </div>
-				</div><!-- card body -->
-		  </div><!-- card -->
-
 			<div class="card"><!-- Active Jobs -->
 				<div class="card-header">
 					<h5>
@@ -157,104 +142,5 @@
   // Do nothing
   }
 };
-</script>
-
-<!-- ChartJs -->
-<script>
-  /*
-
-// fetch data from your view
-fetch("{% url 'chartview' %}")
-  .then(response => response.json())
-  .then(data => {
-    let asksData = [];
-    let bidsData = [];
-
-    // iterate over each record in the data
-    data.forEach(record => {
-      let time = record['timestamp']; // set your X-axis value here
-      let asks = JSON.parse(record['asks']);
-      let bids = JSON.parse(record['bids']);
-
-      // calculate the biggest quantity for each asks and bids
-      let maxAsk = Math.max(...Object.values(asks).map(o => o.Quantity));
-      let maxBid = Math.max(...Object.values(bids).map(o => o.Quantity));
-
-      // add each point to the appropriate dataset
-      Object.values(asks).forEach(ask => {
-        let point = {
-          x: time,
-          y: ask['Weighted Price'],
-          r: ask['Quantity'] == maxAsk ? 10 : 5 // set the size of the point based on quantity
-        }
-        asksData.push(point);
-      });
-
-      Object.values(bids).forEach(bid => {
-        let point = {
-          x: time,
-          y: bid['Weighted Price'],
-          r: bid['Quantity'] == maxBid ? 10 : 5
-        }
-        bidsData.push(point);
-      });
-    });
-      options: {
-        scales: {
-          xAxes: [{
-            type: 'time',
-            time: {
-              displayFormats: {
-                minute: 'MMM D, h:mm a'
-              }
-            }
-          }],
-          yAxes: [{
-            type: 'linear',
-      
-  });
-*/
-</script>
-
-<script>
-  "use strict";
-$(function () {
-  const asks = JSON.parse('{{ context|safe }}')
-  console.log(asks)
-
-  const ctx = document.getElementById('chart');
-
-  new Chart(ctx, {
-    type: 'scatter',
-    data: {
-    datasets: [{
-      label: 'Asks',
-      data: asks,
-      borderColor: 'red',
-      backgroundColor: 'rgba(255, 0, 0, 0.5)',
-      borderWidth: 1,
-    },
-    {
-      label: 'Bids',
-      data: [8, 21, 3, 2, 4, 6],
-      borderColor: 'green',
-      backgroundColor: 'rgba(0, 255, 0, 0.5)',
-      borderWidth: 1,
-    }]
-  },
-    options: {
-      /*
-      scales: {
-        y: {
-          beginAtZero: true
-        },
-        x: {
-          beginAtZero: true
-        }
-      }
-      */
-    }
-  });
-});
 </script>
 {% endblock %}
