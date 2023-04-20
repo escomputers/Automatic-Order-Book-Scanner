@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+  .button-container {
+    float: right;
+  }
+</style>
+<div class="content-wrapper">
+<!-- Content Header (Page header) -->
+  <section class="content-header">
+    <div class="container-fluid">
+    </div>
+  </section>
+
+	<!-- Main content -->
+	<section class="content">
+		<div class="container-fluid">
+
+			<div class="card"><!-- Active Jobs -->
+				<div class="card-header">
+					<h5>
+						<i class="fas fa-list-check"></i>
+						&nbsp;Active Tasks
+          </h5>
+				</div>
+
+				<div class="card-body">
+					<table id="active_tasks" class="table table-borderless table-hover">
+						<thead>
+							<tr>
+                <th><i class="fas fa-id-badge"></i>&nbsp;ID</th>
+                <th><i class="fas fa-coins"></i>&nbsp;Pair</th>
+                <th><i class="fas fa-clock"></i>&nbsp;Next run UTC</th>
+                <th><i class="fas fa-rotate-right"></i>&nbsp;Interval</th>
+                <th><i class="fas fa-chart-bar"></i>&nbsp;Grouping</th>
+                <th><i class="fas fa-calculator"></i>&nbsp;Depth</th>
+                <th><i class="fas fa-circle-exclamation"></i>&nbsp;Actions</th>
+							</tr>
+						</thead>
+
+						{% if tasks %}
+						<tbody>
+              {% for task in tasks %}
+							<tr>
+                <td>{{ task.id }}</td>
+								<td>{{ task.symbol }}</td>
+								<td>{{ task.next_run }}</td>
+                <td>{{ task.interval }}<small>&nbsp;mins</small></td>
+								<td>{{ task.grouping }}</td>
+                <td>{{ task.depth }}</td>
+                <td>
+                  {% csrf_token %}
+                  <button type="button" onclick="deleteRow({{ task.id }})" class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Delete task">
+                    Delete&nbsp;<i class="fas fa-trash"></i>
+                  </button>
+                </td>
+							</tr>
+              {% endfor %}
+						</tbody>
+            {% endif %}	
+
+					</table>
+				</div><!-- card body -->
+		  </div><!-- card -->
+
+	  </div><!-- container-fluid -->
+
+	</section>
+</div><!-- content-wrapper -->
+
+
+<!-- Active Tasks Datatable -->
+<script>
+  $(function () {
+    let table = $('#active_tasks').DataTable({
+      dom: '<"button-container"B>lfrtip',
+      responsive: true,
+      buttons: [
+        {
+          extend: 'copy',
+          text: '<i class="fas fa-copy"></i> Copy',
+          className: 'btn btn-light',
+          exportOptions: {
+            columns: ':visible'
+          }
+        },
+        {
+          extend: 'print',
+          text: '<i class="fas fa-print"></i> Print',
+          className: 'btn btn-light',
+          exportOptions: {
+            columns: ':visible'
+          }
+        },
+        {
+          extend: 'csv',
+          text: '<i class="fas fa-file-csv"></i> CSV',
+          className: 'btn btn-light',
+          exportOptions: {
+            columns: ':visible'
+          }
+        },
+        {
+          extend: 'pdf',
+          text: '<i class="fas fa-file-pdf"></i> PDF',
+          className: 'btn btn-light',
+          exportOptions: {
+            columns: ':visible'
+          }
+        }
+        ]
+    });
+  
+  });
+</script>
+
+
+<!-- Delete table row function -->
+<script>
+  function deleteRow(taskId) {
+  let result = confirm("Are you sure you want to delete this task?");
+
+  if (result) {
+  // Perform delete action
+    $.ajax({
+      url: "{% url 'deletetasks' %}",
+      dataType: "text",
+      method: "POST",
+      data : {
+      csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+      data: JSON.stringify(taskId),
+      },
+      success: function(data, status, xhr){
+        location.reload();
+      },
+      error: function(xhr, status, error){
+      }
+    })
+  } else {
+  // User clicked Cancel or closed the dialog box
+  // Do nothing
+  }
+};
+</script>
+{% endblock %}

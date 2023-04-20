@@ -1,9 +1,19 @@
 from django.shortcuts import render, get_object_or_404
 from django_q.tasks import schedule, Schedule
 import json
+<<<<<<< HEAD
 from django.core.exceptions import EmptyResultSet
 from django_q.models import Schedule
 from frontend.models import ScanResults
+=======
+from django.http import JsonResponse
+from django_q.models import Schedule
+from frontend.models import ScanResults
+
+
+
+from django.db.models import Max
+>>>>>>> main
 
 
 def tasks(request):
@@ -66,6 +76,7 @@ def deletetasks(request):
 
 
 def charts(request):
+<<<<<<< HEAD
     asksjson = None # empty columns case
     bidsjson = None
 
@@ -82,6 +93,25 @@ def charts(request):
             bids_row.append({'x': price, 'y': values['QTY']})
         asksjson = json.dumps(asks_row)
         bidsjson = json.dumps(bids_row)
+=======
+    try:
+        rows = ScanResults.objects.all().values()
+        for row in rows:
+            asks_row = []
+            bids_row = []
+
+            bids_dict = json.loads(row['bids'])
+
+            for price, values in row['asks'].items():
+                asks_row.append({'x': price, 'y': values['QTY']})
+            for price, values in bids_dict.items():
+                bids_row.append({'x': price, 'y': values['QTY']})
+            asksjson = json.dumps(asks_row)
+            bidsjson = json.dumps(bids_row)
+    except ScanResults.DoesNotExist:
+        asksjson = None
+        bidsjson = None
+>>>>>>> main
 
 
     return render(request, 'charts.html', context={'asks': asksjson, 'bids': bidsjson})
