@@ -65,6 +65,7 @@ def Scan(symbol, grouping, depth):
     timestamp = timezone.now()
 
     # Create instances of ScanResults model
+    '''
     scan_results = [
         ScanResults(
             symbol=symbol,
@@ -74,5 +75,6 @@ def Scan(symbol, grouping, depth):
         )
     ]
     ScanResults.objects.bulk_create(scan_results)
+    '''
 
 Scan('BTCUSDT', '100', '5000')
