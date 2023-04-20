@@ -74,5 +74,3 @@ def Scan(symbol, grouping, depth):
         )
     ]
     ScanResults.objects.bulk_create(scan_results)
-
-('BTCUSDT', '100', '5000')
