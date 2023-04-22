@@ -2,7 +2,7 @@
 The scope of this tool is providing useful order book signals from Binance order book, by:
 - reading symbol order book repeatedly
 - saving aggregated price levels
-- saving updated data for displaying into a webpage using charts
+- displaying data into a webpage using charts
 
 <sub>Note: Scan depth is limited by Binance API of last 5000 bids & asks</sub>
 
