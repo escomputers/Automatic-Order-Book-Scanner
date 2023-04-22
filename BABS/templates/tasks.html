@@ -80,7 +80,7 @@
 						<div class="card-header">
 							<h6>
 								<i class="fas fa-coins"></i>
-								&nbsp;Select <strong>USDT</strong> trading pair
+								&nbsp;Select trading pair
 							</h6>
 						</div>
 
@@ -180,49 +180,15 @@
 <!-- Get symbols -->
 <script>
 	$.ajax({
-		url: 'https://api.binance.com/api/v1/exchangeInfo',
+		url: "{% url 'symbols' %}",
 		success: function(data) {
-			filterSymbols(data)
-			}
+			addSymbols(data)
+		}
 	})
-	function filterSymbols(data) {
-		const quote = 'USDT'
-		const allSymbols = data.symbols
-		const USDTpairs = allSymbols.map(
-		(x)=> {
-				if (x.quoteAsset.includes(quote) && x.status === 'TRADING') {
-						return x.baseAsset
-						}
-				}
-		).filter((x)=> {if(x){return x}})
-
-		const regex1 = /UP$/
-		const regex2 = /DOWN$/
-		const regex3 = /BULL$/
-		const regex4 = /BEAR$/
-		const garbage1 = $.grep(USDTpairs, function (e) {
-			return regex1.test(e);
-		});
-		const garbage2 = $.grep(USDTpairs, function (e) {
-			return regex2.test(e);
-		});
-		const garbage3 = $.grep(USDTpairs, function (e) {
-			return regex3.test(e);
-		});
-		const garbage4 = $.grep(USDTpairs, function (e) {
-			return regex4.test(e);
-		});
-		const marginCoins1 = $.merge(garbage1, garbage2)
-		const marginCoins2 = $.merge(garbage3, garbage4)
-		const marginCoins = $.merge(marginCoins1, marginCoins2)
-		const filteredUSDTpairs = $.grep(USDTpairs, function(value) {
-			return $.inArray(value, marginCoins) < 0;
-		});
-		let $select = $('#pairs'); 
-		$select.find('option').remove();  
-		$.each(filteredUSDTpairs,function(key, value)
-		{
-			$select.append('<option value=' + key + '>' + value + '</option>');
+	function addSymbols(data) {
+		const $select = $('#pairs');
+		data.symbols.forEach(symbol => {
+			$select.append('<option value=' + symbol.id + '>' + symbol.symbol + '</option>');
 		});
 	}
 </script>
@@ -234,9 +200,9 @@ $(function () {
 		$('[data-toggle="tooltip"]').tooltip();
 
 		function addIcons (icon) {
-			if (!icon.id) { return icon.text; }
+			if (!icon.id) { return icon.text.replace('USDT', ''); }
 				let $icon = $(
-					'<span><img src="{% static 'images/coins/' %}' + icon.text +
+					'<span><img src="{% static 'images/coins/' %}' + icon.text.replace('USDT', '') +
 					'.png"/> '  + icon.element.text + '</span>'
 				);
 			return $icon;

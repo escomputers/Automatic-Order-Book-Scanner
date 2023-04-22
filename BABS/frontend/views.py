@@ -1,9 +1,9 @@
 from django.shortcuts import render, get_object_or_404
+from django.http import JsonResponse
 from django_q.tasks import schedule, Schedule
 import json
-from django.core.exceptions import EmptyResultSet
 from django_q.models import Schedule
-from frontend.models import ScanResults
+from frontend.models import ScanResults, Symbol
 
 
 def tasks(request):
@@ -27,27 +27,29 @@ def tasks(request):
                     'depth': depth
             }
             context.append(element)
+
     except Schedule.DoesNotExist:
         context = None
-        if request.method == 'POST':
-            # Get ajax dictionary from frontend
-            usrdata = json.loads(request.POST['data'])
 
-            request.session['context'] = usrdata
+    if request.method == 'POST':
+        # Get ajax dictionary from frontend
+        usrdata = json.loads(request.POST['data'])
 
-            name = usrdata['pair'] + '-' + \
-                usrdata['refreshinterval'] + '-' + \
-                usrdata['grouping'] + '-' + \
-                usrdata['depth']
+        request.session['context'] = usrdata
 
-            # Assign task to DjangoQ
-            schedule('frontend.utils.Scan',
-                usrdata['pair'], usrdata['grouping'], usrdata['depth'],
-                name=name,
-                schedule_type=Schedule.MINUTES, 
-                minutes=int(usrdata['refreshinterval']),
-                repeats=-1
-            )
+        name = usrdata['pair'] + '-' + \
+            usrdata['refreshinterval'] + '-' + \
+            usrdata['grouping'] + '-' + \
+            usrdata['depth']
+
+        # Assign task to DjangoQ
+        schedule('frontend.utils.Scan',
+            usrdata['pair'], usrdata['grouping'], usrdata['depth'],
+            name=name,
+            schedule_type=Schedule.MINUTES, 
+            minutes=int(usrdata['refreshinterval']),
+            repeats=-1
+        )
 
 
     return render(request, 'tasks.html', context={'tasks': context})
@@ -85,3 +87,13 @@ def charts(request):
 
 
     return render(request, 'charts.html', context={'asks': asksjson, 'bids': bidsjson})
+
+
+def symbols(request):
+    pairs = Symbol.objects.all().values()
+    symbols = []
+    for pair in pairs:
+        symbols.append(pair)
+
+
+    return JsonResponse({'symbols': symbols})

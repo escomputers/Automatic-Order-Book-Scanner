@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Symbol(models.Model):
-    symbol = models.CharField(max_length=9, blank=True, null=True)
+    symbol = models.CharField(blank=True, null=True)
 
 
 class ScanResults(models.Model):

@@ -1,31 +1,13 @@
 ## Scope
 The scope of this tool is providing useful order book signals from Binance order book, by:
 - reading symbol order book repeatedly
-- saving filtered price levels according to specific order value
-- comparing new order book data with previous filtered price levels
-- saving updated data and displaying them on a webpage using a chart
+- saving aggregated price levels
+- saving updated data for displaying into a webpage using charts
 
-
-## Working principle
-Every X seconds (the refresh interval can be modified) the tool starts a new check procedure.
-
-When running for the first time:
-
-1. Connects to the Binance API for fetching latest order book data for the chosen symbol using maximum scan depth (last 5000 bids & asks) allowed by Binance
-3. Filters price levels basing on USD order value (price * quantity) set by the user
-3. Saves data in database
-
-Next time it runs:
-
-4. Connects to database for fetching previous symbol snapshot
-6. Repeats step 1
-7. Compares latest data from API with data saved inside the database in order to find common price levels
-8. Creates a new object containing common price levels with updated quantities
-9. Replaces database object with the new dictionary
-
+<sub>Note: Scan depth is limited by Binance API of last 5000 bids & asks</sub>
 
 ## Requirements
-PostgreSQL instance with a database named `babs`
+PostgreSQL database
 
 
 ## Usage
@@ -37,23 +19,35 @@ mkdir -p env
 source env/bin/activate
 ```
 4. Install requirements `python -m pip install -r requirements.txt`
-5. Export environment variables with your PostgreSql installation
+5. Export environment variables with your PostgreSql installation and configure `settings.py` by setting database connection details
 ```
 export POSTGRESQL_USR=
 export POSTGRESQL_PWD=
 ```
-6. Review the 3 main required input parameters within `babs.py`:
+6. Apply database migrations
 ```
-symbol = 'BTCUSDT'
-refresh_interval = 5.0 (in seconds)
-value_threshold = 400000.00 (in USD)
+python manage.py makemigrations
+python manage.py migrate
 ```
-7. Run `python babs.py`
+7. Create Django ORM cache table
+```
+python manage.py createcachetable django_orm_cache_table
+```
+8. Open another shell with environment variables exported for starting DjangoQ:
+```
+python manage.py qcluster
+```
+9. Populate symbols list and schedule weekly update
+```
+python frontend/utils.py schedule-symbols
+```
+10. Run `python manage.py runserver`
 
 
-## DEV branch
-- Add django
-- Line chart for prices and quantities
-- Extend trading pair selection to All pairs or specific trading pairs selected by the user
-- Bake docker image
-- Alerting (TBD)
+## INT branch
+| Feature      | Status |
+| ----------- | ----------- |
+| Line chart for prices and quantities      | In progress       |
+| Extend trading pair selection to All pairs or specific trading pairs selected by the user   | Todo        |
+| Bake docker image       | Todo       |
+| Alerting     | TBD       |

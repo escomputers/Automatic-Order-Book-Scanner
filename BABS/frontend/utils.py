@@ -4,19 +4,33 @@ import sys
 import json
 
 
+# Initialize Django project environment
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(BASE_DIR)
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'BABS.settings')
+import django
+django.setup()
+
+
+from django_q.tasks import schedule, Schedule
+from django.utils import timezone
+from frontend.models import ScanResults, Symbol
+from bootstrap import SymbolsUpdate
+
+
+# Assign task of updating symbols weekly to DjangoQ
+def ScheduleSymbolsUpdate():
+    SymbolsUpdate()
+    schedule('frontend.bootstrap.SymbolsUpdate',
+        name='Update symbols job',
+        schedule_type=Schedule.WEEKLY,
+        repeats=-1
+    )
+
+
 def Scan(symbol, grouping, depth):
-    # Initialize Django project environment
-    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    sys.path.append(BASE_DIR)
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'BABS.settings')
-    import django
-    django.setup()
-
-
-    from django.utils import timezone
-    from frontend.models import ScanResults
-
     api_uri = 'https://api.binance.com/api/v3/depth?symbol=' + symbol + '&limit=' + depth
+
 
     # Get order book snapshot from Binance API
     def get_api_data(api_uri):
@@ -65,7 +79,6 @@ def Scan(symbol, grouping, depth):
     timestamp = timezone.now()
 
     # Create instances of ScanResults model
-    '''
     scan_results = [
         ScanResults(
             symbol=symbol,
@@ -75,6 +88,8 @@ def Scan(symbol, grouping, depth):
         )
     ]
     ScanResults.objects.bulk_create(scan_results)
-    '''
 
-Scan('BTCUSDT', '100', '5000')
+
+if __name__ == "__main__":
+    if sys.argv[1] == "schedule-symbols":
+        ScheduleSymbolsUpdate()
