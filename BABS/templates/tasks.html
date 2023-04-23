@@ -18,6 +18,17 @@
 	<section class="content">
 		<div class="container-fluid">
 
+
+			{% if error %}
+			<div class="alert alert-danger alert-dismissible fade show" role="alert">
+				<i class='fa fa-circle-info'></i>
+				&nbsp;{{ error }}
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			{% endif %}
+
 			<div class="card"><!-- Active Jobs -->
 				<div class="card-header">
 					<h5>
@@ -217,14 +228,14 @@ $(function () {
 			return $icon;
 		};
 
-		$('#pairs').select2({
+		$("#pairs").select2({
 			theme: 'bootstrap4',
 			templateResult: addIcons,
 		});
 })
 </script>
 
-<!-- Fields validation -->
+<!-- Fields validation and call backend -->
 <script>
 	"use strict";
 
@@ -293,6 +304,30 @@ $(function () {
 			ajax_call()
 		}
 
+		function success() {
+			Swal.fire({
+				html: 'Task added successfully!',
+				focusConfirm: false,
+				icon: 'success',
+				showCloseButton: true,
+				showConfirmButton: false,
+				toast: true,
+				position: 'top-right'
+			})
+		}
+
+		function error() {
+			Swal.fire({
+				html: 'Schedule with these options already exists!',
+				focusConfirm: false,
+				icon: 'error',
+				showCloseButton: true,
+				showConfirmButton: false,
+				toast: true,
+				position: 'top-right'
+			})
+		}
+
 		// ajax call
 		function ajax_call() {
 			$.ajax({
@@ -303,10 +338,23 @@ $(function () {
 				csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
 				data: JSON.stringify(usr_data),
 				},
-				success: function(data, status, xhr){
-					location.reload();
+				success: function(response){
+					console.log(response)
+					/*
+					if (response.success) {
+						success()
+						setTimeout(function() {
+							// code to be executed after 2 seconds
+							location.reload();
+						}, 2000);
+        	} else {
+            // handle the error case
+            error()
+        	}
+					*/
 				},
 				error: function(xhr, status, error){
+					console.log(xhr.responseText);
 				}
 			})
 

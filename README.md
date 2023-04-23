@@ -48,6 +48,6 @@ python frontend/bootstrap.py schedule-symbols
 | Feature      | Status |
 | ----------- | ----------- |
 | Line chart for prices and quantities      | In progress       |
-| Extend trading pair selection to All pairs or specific trading pairs selected by the user   | Todo        |
+| Extend trading pair selection to All and GROUP   | Todo        |
 | Bake docker image       | Todo       |
 | Alerting     | TBD       |
