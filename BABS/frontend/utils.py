@@ -12,20 +12,8 @@ import django
 django.setup()
 
 
-from django_q.tasks import schedule, Schedule
 from django.utils import timezone
 from frontend.models import ScanResults, Symbol
-from bootstrap import SymbolsUpdate
-
-
-# Assign task of updating symbols weekly to DjangoQ
-def ScheduleSymbolsUpdate():
-    SymbolsUpdate()
-    schedule('frontend.bootstrap.SymbolsUpdate',
-        name='Update symbols job',
-        schedule_type=Schedule.WEEKLY,
-        repeats=-1
-    )
 
 
 def Scan(symbol, grouping, depth):
@@ -75,21 +63,19 @@ def Scan(symbol, grouping, depth):
 
     bids = json.dumps(aggregate(api_data['bids']))
     asks = json.dumps(aggregate(api_data['asks']))
-
     timestamp = timezone.now()
 
-    # Create instances of ScanResults model
-    scan_results = [
-        ScanResults(
-            symbol=symbol,
-            bids=bids,
-            asks=asks,
-            timestamp=timestamp
-        )
-    ]
+    symbol_instance = Symbol.objects.filter(symbol=symbol).values('id')
+    for i in symbol_instance:
+        symbol_id = i.get('id')
+
+        # Create instances of ScanResults model
+        scan_results = [
+            ScanResults(
+                symbol_id=symbol_id,
+                bids=bids,
+                asks=asks,
+                timestamp=timestamp
+            )
+        ]
     ScanResults.objects.bulk_create(scan_results)
-
-
-if __name__ == "__main__":
-    if sys.argv[1] == "schedule-symbols":
-        ScheduleSymbolsUpdate()

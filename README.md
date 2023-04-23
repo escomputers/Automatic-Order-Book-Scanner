@@ -39,7 +39,7 @@ python manage.py qcluster
 ```
 9. Populate symbols list and schedule weekly update
 ```
-python frontend/utils.py schedule-symbols
+python frontend/bootstrap.py schedule-symbols
 ```
 10. Run `python manage.py runserver`
 

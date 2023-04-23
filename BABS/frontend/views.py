@@ -11,24 +11,32 @@ def tasks(request):
         context = []
         tasks = Schedule.objects.all().values()
         for i in tasks:
-            objects_names = i.get('name')
-            values = objects_names.split('-')
-            symbol = values[0]
-            interval = values[1]
-            grouping = values[2]
-            depth = values[3]
-            next_run = i.get('next_run')
-            id = i.get('id')
-            element = {'id': id,
-                    'symbol': symbol, 
-                    'next_run': next_run,
-                    'interval': interval, 
-                    'grouping': grouping, 
-                    'depth': depth
-            }
-            context.append(element)
+            if i['name'] != 'job-update-symbols':
+                next_run = i.get('next_run')
+                id = i.get('id')
 
-    except Schedule.DoesNotExist:
+                # Construct name from schedule name
+                objects_names = i.get('name')
+                values = objects_names.split('-')
+                symbol = values[0]
+                interval = values[1]
+                grouping = values[2]
+                depth = values[3]
+
+                last_task = Schedule.objects.get(name=objects_names)
+                last_status = last_task.success()
+
+                element = {'id': id,
+                        'symbol': symbol, 
+                        'next_run': next_run,
+                        'interval': interval, 
+                        'grouping': grouping, 
+                        'depth': depth,
+                        'status': last_status
+                }
+                context.append(element)
+
+    except IndexError:
         context = None
 
     if request.method == 'POST':
