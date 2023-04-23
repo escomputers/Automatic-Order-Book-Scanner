@@ -4,7 +4,7 @@ The scope of this tool is providing useful order book signals from Binance order
 - saving aggregated price levels
 - displaying data into a webpage using charts
 
-<sub>Note: Scan depth is limited by Binance API of last 5000 bids & asks</sub>
+<sub>Note: each symbol scan depth is limited by Binance API of last 5000 bids & asks</sub>
 
 ## Requirements
 PostgreSQL database
