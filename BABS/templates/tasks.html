@@ -332,15 +332,12 @@ $(function () {
 		function ajax_call() {
 			$.ajax({
 				url: "{% url 'tasks' %}",
-				dataType: "text",
 				method: "POST",
 				data : {
 				csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
 				data: JSON.stringify(usr_data),
 				},
 				success: function(response){
-					console.log(response)
-					/*
 					if (response.success) {
 						success()
 						setTimeout(function() {
@@ -351,7 +348,6 @@ $(function () {
             // handle the error case
             error()
         	}
-					*/
 				},
 				error: function(xhr, status, error){
 					console.log(xhr.responseText);

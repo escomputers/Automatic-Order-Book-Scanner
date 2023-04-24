@@ -56,7 +56,6 @@ def tasks(request):
                 if i['name'] == name:
                     return JsonResponse({'success': False})
                 else:
-                    '''
                     # Assign task to DjangoQ
                     schedule('frontend.utils.Scan',
                         usrdata['pair'], usrdata['grouping'], usrdata['depth'],
@@ -65,7 +64,6 @@ def tasks(request):
                         minutes=int(usrdata['refreshinterval']),
                         repeats=-1
                     )
-                    '''
                     return JsonResponse({'success': True})
 
 
