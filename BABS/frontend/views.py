@@ -91,9 +91,10 @@ def charts(request):
         asks_row = []
         bids_row = []
 
+        asks_dict = json.loads(row['asks'])
         bids_dict = json.loads(row['bids'])
 
-        for price, values in row['asks'].items():
+        for price, values in asks_dict.items():
             asks_row.append({'x': price, 'y': values['QTY']})
         for price, values in bids_dict.items():
             bids_row.append({'x': price, 'y': values['QTY']})
