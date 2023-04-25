@@ -71,7 +71,7 @@
 								{% endif %}
                 <td>
                   {% csrf_token %}
-                  <button type="button" onclick="deleteRow({{ task.id }})" class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Delete task">
+                  <button type="button" onclick="confirmDelete({{ task.id }})" class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Delete task">
                     Delete&nbsp;<i class="fas fa-trash"></i>
                   </button>
                 </td>
@@ -408,10 +408,26 @@ $(function () {
 
 <!-- Delete table row function -->
 <script>
-  function deleteRow(taskId) {
-  let result = confirm("Are you sure you want to delete this task?");
+  function confirmDelete(taskId) {
 
-  if (result) {
+	Swal.fire({
+		title: 'Confirm your choice',
+		text: "Are you sure to delete this task?",
+		icon: 'warning',
+		showCancelButton: true,
+		confirmButtonColor: '#3085d6',
+		cancelButtonColor: '#d33',
+		confirmButtonText: 'Yes, delete it!'
+	}).then((result) => {
+		if (result.isConfirmed) {
+			Swal.fire(
+				'Task has been deleted.'
+			)
+			deleteRow()
+		}
+	})
+
+	function deleteRow() {
   // Perform delete action
     $.ajax({
       url: "{% url 'deletetasks' %}",
@@ -427,10 +443,7 @@ $(function () {
       error: function(xhr, status, error){
       }
     })
-  } else {
-  // User clicked Cancel or closed the dialog box
-  // Do nothing
-  }
+	}
 };
 </script>
 {% endblock %}
