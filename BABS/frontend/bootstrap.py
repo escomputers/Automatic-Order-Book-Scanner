@@ -61,7 +61,7 @@ def ScheduleSymbolsUpdate():
     SymbolsUpdate()
     schedule('frontend.bootstrap.SymbolsUpdate',
         name='job-update-symbols',
-        schedule_type=Schedule.WEEKLY,
+        schedule_type=Schedule.DAILY,
         repeats=-1
     )
 
