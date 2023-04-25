@@ -6,4 +6,5 @@ urlpatterns = [
     path("delete-tasks/", views.deletetasks, name="deletetasks"),
     path("charts/", views.charts, name="charts"),
     path("symbols/", views.symbols, name="symbols"),
+    path('symbol/<int:symbol_id>/', views.symbolchart, name='symbolchart'),
 ]

@@ -4,7 +4,7 @@ from django_q.tasks import schedule, Schedule
 import json
 from django_q.models import Schedule
 from frontend.models import ScanResults, Symbol
-
+from collections import Counter
 
 def tasks(request):
     try:
@@ -82,11 +82,13 @@ def deletetasks(request):
     return render(request, 'home.html')
 
 
-def charts(request):
+def symbolchart(request, symbol_id):
     asksjson = None # empty columns case
     bidsjson = None
 
-    rows = ScanResults.objects.all().values()
+    symbol = Symbol.objects.get(pk=symbol_id)
+    # rows = ScanResults.objects.all().values()
+    rows = ScanResults.objects.filter(symbol=symbol).order_by('timestamp').values()
     for row in rows:
         asks_row = []
         bids_row = []
@@ -102,7 +104,7 @@ def charts(request):
         bidsjson = json.dumps(bids_row)
 
 
-    return render(request, 'charts.html', context={'asks': asksjson, 'bids': bidsjson})
+    return render(request, 'symbol_chart.html', context={'symbol': symbol, 'asks': asksjson, 'bids': bidsjson})
 
 
 def symbols(request):
@@ -113,3 +115,23 @@ def symbols(request):
 
 
     return JsonResponse({'symbols': symbols})
+
+
+def charts(request):
+    try:
+        # Get all symbols ids having ScanResults
+        rows = ScanResults.objects.all().values()
+        symbol_ids = []
+        for row in rows:
+            symbol_ids.append(row['symbol_id'])
+
+        counted_lst = Counter(symbol_ids)
+
+        for k, v in counted_lst.items():
+            symbols_objects = Symbol.objects.get(pk=k)
+            symbols = {'id': k, 'symbol': str(symbols_objects), 'counts': v}
+    except ScanResults.DoesNotExist:
+        symbols = None
+
+
+    return render(request, 'charts.html', context={'symbols': symbols})
