@@ -10,8 +10,9 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'BABS.settings')
 import django
 django.setup()
 
+from django.db import transaction
 from django_q.tasks import schedule, Schedule
-from frontend.models import Symbol
+from frontend.models import Symbol, ScanResults
 
 
 def SymbolsUpdate():
@@ -25,27 +26,34 @@ def SymbolsUpdate():
         if symbol['quoteAsset'] == 'USDT':
             usdt_pairs.append(symbol['symbol'])
 
-    try:
-        # Get the existing symbols from the database
-        existing_symbols = set(Symbol.objects.values_list('symbol', flat=True))
+    with transaction.atomic():
+        try:
+            # Get the existing symbols from the database
+            existing_symbols = set(Symbol.objects.values_list('symbol', flat=True))
 
-        # Find the symbols that are new
-        new_symbols = set(usdt_pairs) - existing_symbols
+            # Find the symbols that are new
+            new_symbols = set(usdt_pairs) - existing_symbols
 
-        # Find the symbols that have been removed in Binance
-        removed_symbols = existing_symbols - set(usdt_pairs)
+            # Find the symbols that have been removed in Binance
+            removed_symbols = existing_symbols - set(usdt_pairs)
 
-        # Add the new symbols to the database
-        for symbol in new_symbols:
-            new_symbol = Symbol(symbol=symbol)
-            new_symbol.save()
+            # Add the new symbols to the database
+            for symbol in new_symbols:
+                new_symbol = Symbol(symbol=symbol)
+                new_symbol.save()
 
-        # Remove the symbols that have been removed from the database
-        Symbol.objects.filter(symbol__in=removed_symbols).delete()
-    except Symbol.DoesNotExist:
-        for symbol in usdt_pairs: # add all symbols from scratch
-            new_symbol = Symbol(symbol=symbol)
-            new_symbol.save()
+            # Remove the symbols that have been removed from the database
+            Symbol.objects.filter(symbol__in=removed_symbols).delete()
+
+            try:
+                # Delete all associated ScanResults objects for removed symbols
+                ScanResults.objects.filter(symbol__in=removed_symbols).delete()
+            except ScanResults.DoesNotExist:
+                pass
+        except Symbol.DoesNotExist:
+            for symbol in usdt_pairs: # add all symbols from scratch
+                new_symbol = Symbol(symbol=symbol)
+                new_symbol.save()
 
 
 # Assign task of updating symbols weekly to DjangoQ
