@@ -37,12 +37,27 @@
   "use strict";
 $(function () {
   const asks = JSON.parse('{{ asks|safe }}');
-  const bids = JSON.parse('{{ bids|safe }}')
+  const bids = JSON.parse('{{ bids|safe }}');
+  const timestamps = '{{ timestamps|safe }}';
+
+  // timestamps change to more readable format
+  const inputDate = new Date(timestamps);
+  const outputTimeString = inputDate.toLocaleTimeString();
+  const outputDateString = inputDate.toLocaleDateString();
+  const date = `${outputTimeString} - ${outputDateString} ${inputDate.toLocaleTimeString('en-us', { timeZoneName: 'short' })}`;
 
   const ctx = document.getElementById('chart');
 
   new Chart(ctx, {
     type: 'scatter',
+    options: {
+      plugins: {
+        title: {
+          display: true,
+          text: date,
+        }
+      }
+    },
     data: {
     datasets: [{
       label: 'Asks',

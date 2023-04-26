@@ -100,11 +100,13 @@ def symbolchart(request, symbol_id):
             asks_row.append({'x': price, 'y': values['QTY']})
         for price, values in bids_dict.items():
             bids_row.append({'x': price, 'y': values['QTY']})
+
         asksjson = json.dumps(asks_row)
         bidsjson = json.dumps(bids_row)
+        timestamps = row['timestamp'].strftime('%Y-%m-%dT%H:%M:%S')
 
 
-    return render(request, 'symbol_chart.html', context={'symbol': symbol, 'asks': asksjson, 'bids': bidsjson})
+    return render(request, 'symbol_chart.html', context={'symbol': symbol, 'asks': asksjson, 'bids': bidsjson, 'timestamps': timestamps})
 
 
 def symbols(request):
