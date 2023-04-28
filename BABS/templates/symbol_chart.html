@@ -21,6 +21,18 @@
 				</div>
 
 				<div class="card-body">
+          {% csrf_token %}
+          <label for="timestamp-select"><i class="fas fa-clock"></i>
+            &nbsp;Select timestamp:</label>
+          <select id="timestamp-select" class="form-control" style="width: 100%;">
+          {% for timestamp in timestamps %}
+            <option value="{{ timestamp }}" {% if timestamp == default_timestamp %}selected{% endif %}>
+            {{ timestamp }}
+            </option>
+          {% endfor %}
+          </select>
+
+          <!-- Chart -->
           <div style="width: 800px;">
             <canvas id="chart"></canvas>
           </div>
@@ -32,50 +44,62 @@
 	</section>
 </div><!-- content-wrapper -->
 
+
 <!-- ChartJs -->
 <script>
   "use strict";
-$(function () {
-  const asks = JSON.parse('{{ asks|safe }}');
-  const bids = JSON.parse('{{ bids|safe }}');
-  const timestamps = '{{ timestamps|safe }}';
+  $(function () {
 
-  // timestamps change to more readable format
-  const inputDate = new Date(timestamps);
-  const outputTimeString = inputDate.toLocaleTimeString();
-  const outputDateString = inputDate.toLocaleDateString();
-  const date = `${outputTimeString} - ${outputDateString} ${inputDate.toLocaleTimeString('en-us', { timeZoneName: 'short' })}`;
+    let asks = JSON.parse('{{ asks|safe }}');
+    let bids = JSON.parse('{{ bids|safe }}');
 
-  const ctx = document.getElementById('chart');
+    const ctx = document.getElementById('chart');
 
-  new Chart(ctx, {
-    type: 'scatter',
-    options: {
-      plugins: {
-        title: {
-          display: true,
-          text: date,
-        }
+    let symbolChart = new Chart(ctx, {
+      type: 'scatter',
+      data: {
+      datasets: [{
+        label: 'Asks',
+        data: asks,
+        borderColor: 'red',
+        backgroundColor: 'rgba(255, 0, 0, 0.5)',
+        borderWidth: 1,
+      },
+      {
+        label: 'Bids',
+        data: bids,
+        borderColor: 'green',
+        backgroundColor: 'rgba(0, 255, 0, 0.5)',
+        borderWidth: 1,
+      }]
       }
-    },
-    data: {
-    datasets: [{
-      label: 'Asks',
-      data: asks,
-      borderColor: 'red',
-      backgroundColor: 'rgba(255, 0, 0, 0.5)',
-      borderWidth: 1,
-    },
-    {
-      label: 'Bids',
-      data: bids,
-      borderColor: 'green',
-      backgroundColor: 'rgba(0, 255, 0, 0.5)',
-      borderWidth: 1,
-    }]
-  }
-  });
+    });
 
+    // select field
+    $("#timestamp-select").select2({
+			theme: 'bootstrap4',
+		}).on('select2:select', function (e) {
+      let data = e.params.data;
+
+      // send new selected timestamp to backend
+      $.ajax({
+        url: window.location.href,
+				method: "POST",
+				data : {
+				csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+				data: JSON.stringify(data.id),
+				},
+				success: function(response){
+          symbolChart.data.datasets[0].data = JSON.parse(response.asks)
+          symbolChart.data.datasets[1].data = JSON.parse(response.bids)
+          symbolChart.update()
+				},
+				error: function(xhr, status, error){
+					console.log(xhr.responseText);
+				}
+			})
+
+    });
 
 });
 </script>

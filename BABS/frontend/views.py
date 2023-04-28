@@ -2,9 +2,11 @@ from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django_q.tasks import schedule, Schedule
 import json
+import datetime
 from django_q.models import Schedule
 from frontend.models import ScanResults, Symbol
 from collections import Counter
+
 
 def tasks(request):
     try:
@@ -42,8 +44,6 @@ def tasks(request):
     if request.method == 'POST':
         # Get ajax dictionary from frontend
         usrdata = json.loads(request.POST['data'])
-
-        #request.session['context'] = usrdata
 
         name = usrdata['pair'] + '-' + \
             usrdata['refreshinterval'] + '-' + \
@@ -86,12 +86,14 @@ def symbolchart(request, symbol_id):
     asksjson = None # empty columns case
     bidsjson = None
 
+    timestamps = []
+
     symbol = Symbol.objects.get(pk=symbol_id)
-    # rows = ScanResults.objects.all().values()
     rows = ScanResults.objects.filter(symbol=symbol).order_by('timestamp').values()
     for row in rows:
         asks_row = []
         bids_row = []
+        timestamps.append(row['timestamp'].strftime('%Y-%m-%dT%H:%M:%S'))
 
         asks_dict = json.loads(row['asks'])
         bids_dict = json.loads(row['bids'])
@@ -103,10 +105,39 @@ def symbolchart(request, symbol_id):
 
         asksjson = json.dumps(asks_row)
         bidsjson = json.dumps(bids_row)
-        timestamps = row['timestamp'].strftime('%Y-%m-%dT%H:%M:%S')
+
+    default_timestamp = timestamps[-1] # set last timestamp as default
+
+    if request.method == 'POST':
+        # Get ajax dictionary from frontend
+        usr_timestamp = json.loads(request.POST['data'])
+
+        timestamp = datetime.datetime.strptime(usr_timestamp, '%Y-%m-%dT%H:%M:%S')
+        rows = ScanResults.objects.filter(timestamp__icontains=timestamp).values()
+
+        for row in rows:
+            asks_row = []
+            bids_row = []
+
+            asks_dict = json.loads(row['asks'])
+            bids_dict = json.loads(row['bids'])
+
+            for price, values in asks_dict.items():
+                asks_row.append({'x': price, 'y': values['QTY']})
+            for price, values in bids_dict.items():
+                bids_row.append({'x': price, 'y': values['QTY']})
+
+        asksjson = json.dumps(asks_row)
+        bidsjson = json.dumps(bids_row)
 
 
-    return render(request, 'symbol_chart.html', context={'symbol': symbol, 'asks': asksjson, 'bids': bidsjson, 'timestamps': timestamps})
+        return JsonResponse({'asks': asksjson, 'bids': bidsjson})
+
+
+    return render(request, 'symbol_chart.html', context={
+        'symbol': symbol, 'asks': asksjson, 'bids': bidsjson, 
+        'timestamps': timestamps, 'default_timestamp': default_timestamp
+    })
 
 
 def symbols(request):

@@ -50,4 +50,6 @@ python frontend/bootstrap.py schedule-symbols
 | Line chart for prices and quantities      | In progress       |
 | Extend trading pair selection to All and GROUP   | Todo        |
 | Bake docker image       | Todo       |
+| Migrate to websocket     | TBD       |
+| Add BUSD     | TBD       |
 | Alerting     | TBD       |
