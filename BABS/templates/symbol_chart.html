@@ -61,11 +61,10 @@ $(function () {
 
   function searchIcon (symbol) {
     // if (!icon.id) { return icon.text.replace('USDT', ''); }
-      let $icon = $(
-        '<span><img src="{% static 'images/coins/' %}' + icon.text.replace('USDT', '') +
-        '.png"/> '  + symbol + '</span>'
-      );
-    return $icon;
+      let icon =
+        '<span><img src="{% static 'images/coins/' %}' + symbol.replace('USDT', '') +
+        '.png"/></span>';
+    console.log(icon);
   };
 
 	function addSymbols(data) {
