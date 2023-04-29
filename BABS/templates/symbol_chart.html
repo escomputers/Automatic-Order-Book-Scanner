@@ -15,9 +15,12 @@
       <div class="card"><!-- Charts table -->
 				<div class="card-header">
 					<h5>
-						<i class="fas fa-chart-simple"></i>
+						<i id="symbolIcon"></i>
 						&nbsp;{{ symbol }} chart
 					</h5>
+          <small class="text-muted">
+            This pair has <strong>{{ tasks }}</strong> tasks associated
+          </small>
 				</div>
 
 				<div class="card-body">
@@ -44,6 +47,38 @@
 	</section>
 </div><!-- content-wrapper -->
 
+<!-- Get symbols -->
+<script>
+$(function () {
+
+	$.ajax({
+		url: "{% url 'symbols' %}",
+		success: function(data) {
+			addSymbols(data)
+		}
+	})
+
+  function searchIcon (symbol) {
+    // if (!icon.id) { return icon.text.replace('USDT', ''); }
+      let $icon = $(
+        '<span><img src="{% static 'images/coins/' %}' + icon.text.replace('USDT', '') +
+        '.png"/> '  + symbol + '</span>'
+      );
+    return $icon;
+  };
+
+	function addSymbols(data) {
+		const $obj = $('#symbolIcon');
+    const regex = /\/symbol\/(\d+)\//;
+    const match = window.location.href.match(regex);
+    if (match) {
+      const symbolId = match[1]; // extract the symbol ID from the first capturing group
+    }
+    searchIcon('BTCUSDT')
+		// $obj.append('<option value=' + symbol.id + '>' + symbol.symbol + '</option>');
+	}
+});
+</script>
 
 <!-- ChartJs -->
 <script>

@@ -17,7 +17,7 @@ def tasks(request):
                 next_run = i.get('next_run')
                 id = i.get('id')
 
-                # Construct name from schedule name
+                # unpack values from schedule name
                 objects_names = i.get('name')
                 values = objects_names.split('-')
                 symbol = values[0]
@@ -85,10 +85,16 @@ def deletetasks(request):
 def symbolchart(request, symbol_id):
     asksjson = None # empty columns case
     bidsjson = None
-
     timestamps = []
+    tasks = []
 
     symbol = Symbol.objects.get(pk=symbol_id)
+
+    tasks_objects = Schedule.objects.filter(name__icontains=symbol).values()
+    for i in tasks_objects:
+        tasks.append(i)
+
+    # get scan results
     rows = ScanResults.objects.filter(symbol=symbol).order_by('timestamp').values()
     for row in rows:
         asks_row = []
@@ -136,7 +142,8 @@ def symbolchart(request, symbol_id):
 
     return render(request, 'symbol_chart.html', context={
         'symbol': symbol, 'asks': asksjson, 'bids': bidsjson, 
-        'timestamps': timestamps, 'default_timestamp': default_timestamp
+        'timestamps': timestamps, 'default_timestamp': default_timestamp,
+        'tasks': len(tasks)
     })
 
 
