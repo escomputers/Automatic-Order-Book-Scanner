@@ -55,27 +55,36 @@ $(function () {
 	$.ajax({
 		url: "{% url 'symbols' %}",
 		success: function(data) {
-			addSymbols(data)
+			getSymbol(data)
 		}
 	})
 
-  function searchIcon (symbol) {
-    // if (!icon.id) { return icon.text.replace('USDT', ''); }
-      let icon =
-        '<span><img src="{% static 'images/coins/' %}' + symbol.replace('USDT', '') +
-        '.png"/></span>';
-    console.log(icon);
+  function addIcon (symbol) {
+    const obj = $('#symbolIcon');
+    let iconPath =
+      '<span><img src="{% static 'images/coins/' %}' + symbol.replace('USDT', '') +
+      '.png"/></span>';
+      obj.append(iconPath);
   };
 
-	function addSymbols(data) {
-		const $obj = $('#symbolIcon');
-    const regex = /\/symbol\/(\d+)\//;
-    const match = window.location.href.match(regex);
-    if (match) {
-      const symbolId = match[1]; // extract the symbol ID from the first capturing group
-    }
-    searchIcon('BTCUSDT')
-		// $obj.append('<option value=' + symbol.id + '>' + symbol.symbol + '</option>');
+	function getSymbol(data) {
+    const pathname = window.location.pathname;
+    const symbolId = pathname.split('/')[2];
+
+    $.ajax({
+      url: "{% url 'symbols' %}",
+      method: "POST",
+      data : {
+      csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+      data: JSON.stringify(symbolId),
+      },
+      success: function(response) {
+        addIcon(response.symbol)
+      },
+      error: function(xhr, status, error){
+        console.log(xhr.responseText);
+      }
+    })
 	}
 });
 </script>

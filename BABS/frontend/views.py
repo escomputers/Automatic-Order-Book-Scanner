@@ -153,6 +153,13 @@ def symbols(request):
     for pair in pairs:
         symbols.append(pair)
 
+    if request.method == 'POST':
+        symbolId = json.loads(request.POST['data'])
+        pairs = Symbol.objects.filter(id=symbolId).values()
+        for pair in pairs:
+            symbol = pair['symbol']
+
+        return JsonResponse({'symbol': symbol})
 
     return JsonResponse({'symbols': symbols})
 
