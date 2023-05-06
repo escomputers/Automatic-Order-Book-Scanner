@@ -1,0 +1,57 @@
+version: '3.2'
+
+services:
+  db:
+    restart: always
+    image: postgres:13
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+    - target: 5432
+      published: 5432
+      protocol: tcp
+      mode: host
+
+  db-admin:
+    restart: always
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    ports:
+    - target: 80
+      published: 80
+      protocol: tcp
+      mode: host
+
+  web:
+    image: babs:latest
+    build: babsproj/
+    command: sh /app/babsproj/entrypoint.sh
+    volumes:
+      - .:/app/
+    ports:
+    - target: 8000
+      published: 8000
+      protocol: tcp
+      mode: host
+    depends_on:
+      - db
+    environment:
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+  redis:
+    image: redis:latest
+    command: ["redis-server", "--save", "60", "1", "--loglevel", "warning"]
+    ports:
+    - target: 6379
+      published: 6379
+      protocol: tcp
+      mode: host
+      
+
+volumes:
+  postgres_data:
