@@ -44,7 +44,7 @@ python babs/bootstrap.py schedule-symbols
 10. Run `python manage.py runserver`
 
 
-## INT branch
+## Development
 | Feature      | Status |
 | ----------- | ----------- |
 | Bake docker image       | In progress       |
