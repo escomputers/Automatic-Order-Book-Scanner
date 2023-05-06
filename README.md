@@ -7,8 +7,11 @@ The scope of this tool is providing useful order book signals from Binance order
 <sub>Note: each symbol scan depth is limited by Binance API of last 5000 bids & asks</sub>
 
 ## Requirements
-PostgreSQL database
+- PostgreSQL database
+- Redis server
 
+By default it connects to `localhost:5432` with user and database name as `postgres` and to
+redis server `localhost:6379` without authentication
 
 ## Usage
 1. Clone repo && cd into directory
@@ -16,39 +19,26 @@ PostgreSQL database
 3. Activate virtual environment
 ```
 mkdir -p env
+python -m venv env
 source env/bin/activate
 ```
 4. Install requirements `python -m pip install -r requirements.txt`
-5. Export environment variables with your PostgreSql installation and configure `settings.py` by setting database connection details
+5. Export Postgresql password environment variable
 ```
-export POSTGRESQL_USR=
-export POSTGRESQL_PWD=
+export POSTGRES_PASSWORD=
 ```
 6. Apply database migrations
 ```
+cd babsproj
 python manage.py makemigrations
 python manage.py migrate
 ```
-7. Create Django ORM cache table
-```
-python manage.py createcachetable django_orm_cache_table
-```
-8. Open another shell with environment variables exported for starting DjangoQ:
+7. Open another shell with environment variables exported for starting DjangoQ:
 ```
 python manage.py qcluster
 ```
-9. Populate symbols list and schedule weekly update
+8. Populate symbols list and schedule weekly update
 ```
 python babs/bootstrap.py schedule-symbols
 ```
-10. Run `python manage.py runserver`
-
-
-## Development
-| Feature      | Status |
-| ----------- | ----------- |
-| Bake docker image       | In progress       |
-| Extend trading pair selection to All and GROUP   | Todo        |
-| Migrate to websocket     | TBD       |
-| Add BUSD     | TBD       |
-| Alerting     | TBD       |
+9. Run `python manage.py runserver`
