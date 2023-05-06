@@ -59,7 +59,7 @@ def SymbolsUpdate():
 # Assign task of updating symbols weekly to DjangoQ
 def ScheduleSymbolsUpdate():
     SymbolsUpdate()
-    schedule('frontend.bootstrap.SymbolsUpdate',
+    schedule('babs.bootstrap.SymbolsUpdate',
         name='job-update-symbols',
         schedule_type=Schedule.DAILY,
         repeats=-1
