@@ -6,13 +6,13 @@ import sys
 # Initialize Django project environment
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(BASE_DIR)
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'BABS.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'babsproj.settings')
 import django
 django.setup()
 
 from django.db import transaction
 from django_q.tasks import schedule, Schedule
-from frontend.models import Symbol, ScanResults
+from babs.models import Symbol, ScanResults
 
 
 def SymbolsUpdate():

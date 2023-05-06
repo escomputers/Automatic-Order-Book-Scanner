@@ -7,13 +7,13 @@ import json
 # Initialize Django project environment
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(BASE_DIR)
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'BABS.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'babsproj.settings')
 import django
 django.setup()
 
 
 from django.utils import timezone
-from frontend.models import ScanResults, Symbol
+from babs.models import ScanResults, Symbol
 
 
 def Scan(symbol, grouping, depth):

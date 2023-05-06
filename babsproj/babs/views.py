@@ -4,7 +4,7 @@ from django_q.tasks import schedule, Schedule
 import json
 import datetime
 from django_q.models import Schedule
-from frontend.models import ScanResults, Symbol
+from babs.models import ScanResults, Symbol
 from collections import Counter
 
 
@@ -165,9 +165,9 @@ def symbols(request):
 
 
 def charts(request):
-    try:
-        # Get all symbols ids having ScanResults
-        rows = ScanResults.objects.all().values()
+    # Get all symbols ids having ScanResults
+    rows = ScanResults.objects.all().values()
+    if rows:
         symbol_ids = []
         for row in rows:
             symbol_ids.append(row['symbol_id'])
@@ -177,7 +177,7 @@ def charts(request):
         for k, v in counted_lst.items():
             symbols_objects = Symbol.objects.get(pk=k)
             symbols = {'id': k, 'symbol': str(symbols_objects), 'counts': v}
-    except ScanResults.DoesNotExist:
+    else:
         symbols = None
 
 

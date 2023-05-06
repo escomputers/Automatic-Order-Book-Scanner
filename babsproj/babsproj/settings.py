@@ -4,8 +4,8 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-POSTGRESQL_USR = os.getenv('POSTGRESQL_USR')
-POSTGRESQL_PWD = os.getenv('POSTGRESQL_PWD')
+
+POSTGRESQL_PWD = os.getenv('POSTGRES_PASSWORD')
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 DEBUG = True
@@ -21,7 +21,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'frontend',
+    'babs',
     'django_q'
 ]
 
@@ -35,7 +35,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'BABS.urls'
+ROOT_URLCONF = 'babsproj.urls'
 
 TEMPLATES = [
     {
@@ -53,13 +53,13 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'BABS.wsgi.application'
+WSGI_APPLICATION = 'babsproj.wsgi.application'
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'default', 
-        'USER': POSTGRESQL_USR,
+        'USER': 'postgres',
         'PASSWORD': POSTGRESQL_PWD,
         'HOST': '127.0.0.1', 
         'PORT': '5432',
