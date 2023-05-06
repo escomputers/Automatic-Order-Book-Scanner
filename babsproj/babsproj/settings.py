@@ -5,7 +5,7 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-POSTGRESQL_PWD = os.getenv('POSTGRES_PASSWORD')
+POSTGRES_PASSWORD = os.getenv('POSTGRES_PASSWORD')
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 DEBUG = True
@@ -60,20 +60,23 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'default', 
         'USER': 'postgres',
-        'PASSWORD': POSTGRESQL_PWD,
+        'PASSWORD': POSTGRES_PASSWORD,
         'HOST': '127.0.0.1', 
         'PORT': '5432',
     }
 }
 
-
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"
 CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
-        'LOCATION': 'django_orm_cache_table',
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
     }
 }
-
 
 Q_CLUSTER = {
     'name': 'Scan',
@@ -82,10 +85,9 @@ Q_CLUSTER = {
     'retry': 120,
     'queue_limit': 50,
     'bulk': 10,
-    'orm': 'default',
+    'django_redis': 'default',
     'catch_up': False
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
