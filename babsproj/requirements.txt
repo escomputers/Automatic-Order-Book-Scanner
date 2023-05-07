@@ -1,8 +1,0 @@
-django==4.2
-requests
-psycopg2
-django-q
-redis>=4.3.6
-django-redis
-sqlparse>=0.4.4 # not directly required, pinned by Snyk to avoid a vulnerability
-whitenoise

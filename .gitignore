@@ -1,7 +1,3 @@
-# files for building docker image
-babsproj/Dockerfile
-babsproj/requirements.txt
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
