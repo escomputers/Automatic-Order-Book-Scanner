@@ -28,7 +28,7 @@ services:
 
   web:
     image: babs:latest
-    build: babsproj/
+    build: build/
     command: sh /app/babsproj/entrypoint.sh
     volumes:
       - .:/app/
