@@ -11,4 +11,5 @@ RUN mkdir -p /app
 WORKDIR /app
 COPY . /app
 COPY requirements.txt /app/requirements.txt
+# RUN wget https://raw.githubusercontent.com/escomputers/Automatic-Order-Book-Scanner/58eeeeb132c5f1f5430831696644ba3b88ef7da8/babsproj/requirements.txt
 RUN python -m pip install -r /app/requirements.txt
