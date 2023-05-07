@@ -26,7 +26,7 @@ export=PGADMIN_DEFAULT_EMAIL
 export=PGADMIN_DEFAULT_PASSWORD=
 ```
 2. Build and run
-```docker compose up -d --build```
+```bash run.sh```
 
 3. Populate symbols list and schedule weekly update
 ```
