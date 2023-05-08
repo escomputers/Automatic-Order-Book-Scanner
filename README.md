@@ -28,9 +28,12 @@ export=PGADMIN_DEFAULT_EMAIL
 export=PGADMIN_DEFAULT_PASSWORD=
 ```
 2. Build and run
-```bash run.sh```
+```
+bash run.sh
+docker compose exec web python babsproj/manage.py qcluster
+```
 
-3. Populate symbols list and schedule weekly update
+3. First time run, populate symbols list and schedule weekly update
 ```
 docker compose exec web python babsproj/babs/bootstrap.py schedule-symbols
 ```
