@@ -52,20 +52,18 @@ def tasks(request):
 
         tasks = Schedule.objects.all().values()
         for i in tasks:
-            if i['name'] != 'job-update-symbols':
-                if i['name'] == name:
-                    return JsonResponse({'success': False})
-                else:
-                    # Assign task to DjangoQ
-                    schedule('frontend.utils.Scan',
-                        usrdata['pair'], usrdata['grouping'], usrdata['depth'],
-                        name=name,
-                        schedule_type=Schedule.MINUTES, 
-                        minutes=int(usrdata['refreshinterval']),
-                        repeats=-1
-                    )
-                    return JsonResponse({'success': True})
-
+            if i['name'] != 'job-update-symbols' or i['name'] == name:
+                return JsonResponse({'success': False})
+            else:
+                # Assign task to DjangoQ
+                schedule('frontend.utils.Scan',
+                    usrdata['pair'], usrdata['grouping'], usrdata['depth'],
+                    name=name,
+                    schedule_type=Schedule.MINUTES, 
+                    minutes=int(usrdata['refreshinterval']),
+                    repeats=-1
+                )
+                return JsonResponse({'success': True})
 
     return render(request, 'tasks.html', context={'tasks': context})
 
