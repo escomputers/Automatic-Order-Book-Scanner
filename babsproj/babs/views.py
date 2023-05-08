@@ -56,7 +56,7 @@ def tasks(request):
                 return JsonResponse({'success': False})
             else:
                 # Assign task to DjangoQ
-                schedule('frontend.utils.Scan',
+                schedule('babs.utils.Scan',
                     usrdata['pair'], usrdata['grouping'], usrdata['depth'],
                     name=name,
                     schedule_type=Schedule.MINUTES, 
