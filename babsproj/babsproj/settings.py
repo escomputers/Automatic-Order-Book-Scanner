@@ -58,7 +58,7 @@ WSGI_APPLICATION = 'babsproj.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'default', 
+        'NAME': 'postgres', 
         'USER': 'postgres',
         'PASSWORD': POSTGRES_PASSWORD,
         'HOST': '127.0.0.1', 
