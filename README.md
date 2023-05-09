@@ -37,3 +37,5 @@ docker compose exec web python babsproj/manage.py qcluster
 ```
 docker compose exec web python babsproj/babs/bootstrap.py schedule-symbols
 ```
+
+<img src="https://i.imgur.com/kOptWcG.gif"></img>
