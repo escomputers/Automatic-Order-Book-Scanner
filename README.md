@@ -18,7 +18,7 @@ Docker image is made of:
 
 <sub>In production run it in front of nginx reverse proxy</sub>
 
-<img src="https://uc94e2d4395cd46811204243c702.previews.dropboxusercontent.com/p/thumb/AB6fIHqjRf0yPiMQLoAId88eUe1zpJ6LV2DWGT7_e4Yj877CvMQdgkNpjYwNhRD0CMJdhmbmZ0a6qlh0ijPLUHLHlNO4ZSM5uYkBWUl8274CEmC3kz4Nh8kjEKmLgNfQ5AAJiungiSe7G-G_rAJzDux2prCJxXZmKsJAv2vPrvj1YDaieFQiz3-zMb755DRvAiMMeV-Aa0sS_9V1MgWkm0cmwR6-OfdStvwc5R92Mfk5qAPdtPQmN5NlYcFA8rDyrXdYH8c29KCAc7nX4M_zyS3C4N88HgJaufR5ZYyDq659HOumK9WGbm_Lmy39a-1PdVuJjEf68YMArJQHy7grOHYqVvzsLGonexBnoVm1u8SORfIWDGlvQb-FFpvJdCGWChuOcMUovBrXHzA5WyRLqeXjFQf-zlxK_PJWyBoH_nmT5Q/p.png" alt="scanned by snyk" width="151" height="86"></img>
+<img src="https://dl.dropboxusercontent.com/s/is8aj5ld2ywfw6i/scanned-by-snyk.png" alt="scanned by snyk" width="151" height="86"></img>
 
 1. Export required environment variables
 ```
