@@ -29,7 +29,10 @@ export=PGADMIN_DEFAULT_PASSWORD=
 ```
 2. Build and run
 ```
+# Build (optional)
 bash run.sh
+
+# Run
 docker compose exec web python babsproj/manage.py qcluster
 ```
 
